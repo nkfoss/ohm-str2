@@ -1,0 +1,11 @@
+.button-container {
+    display: flex;
+    justify-content: flex-end;
+    margin: 10px 10px;
+
+    button:not(:first-child) {
+        margin-left: 10px
+
+    }
+}
+

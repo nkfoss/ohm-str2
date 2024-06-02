@@ -1,0 +1,32 @@
+.main-container {
+    margin-bottom: 10px;
+
+    .exercise-block-title {
+        padding: 10px 0px 0px 10px
+    }
+
+    .mat-column-weight {
+        width: 45%
+    }
+
+    .mat-column-reps {
+        width: 45%
+    }
+
+    .mat-column-actions {
+        width: 10%
+    }
+}
+
+.button-container {
+    margin: 10px 7px;
+    padding: 5px 0px;
+    display: flex;
+    justify-content: end;
+
+    button {
+        margin-right: 8px
+    }
+}
+  
+  

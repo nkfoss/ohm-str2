@@ -1,0 +1,62 @@
+
+<div class="edit-workout-container">
+    <div class="workout-list-header">
+        <button mat-fab extended color="secondary" (click)="onNavigateBack()">
+            <mat-icon>arrow_left</mat-icon>
+            Back
+        </button>
+        <div class="save-button-container">
+            <mat-icon [hidden]="changes || !hasSaved" class="save-check-icon"
+                >check_circle_outline</mat-icon
+            >
+            <button mat-fab extended color="primary" (click)="onSave()">
+                Save
+            </button>
+        </div>
+    </div>
+    <mat-card class="mat-elevation-z8">
+        <div class="workout-metadata-container">
+            <div class="title-and-notes-container">
+                <mat-form-field>
+                    <mat-label>Name</mat-label>
+                    <input
+                        matInput
+                        [(ngModel)]="selectedWorkout.name"
+                        [formControl]="workoutDataForm.controls.name"
+                    />
+                </mat-form-field>
+                <mat-form-field class="notes-form-field">
+                    <mat-label>Notes</mat-label>
+                    <textarea
+                        matInput
+                        rows="4.5"
+                        style="resize: none"
+                        [(ngModel)]="selectedWorkout.notes"
+                        [formControl]="workoutDataForm.controls.notes"
+                    ></textarea>
+                </mat-form-field>
+            </div>
+            <!-- <div class="notes-container">
+                <mat-form-field class="notes-form-field">
+                    <mat-label>Notes</mat-label>
+                    <textarea matInput rows="4.5" style="resize: none" [(ngModel)]="selectedWorkout.notes" [formControl]="workoutDataForm.controls.notes"></textarea>
+                </mat-form-field>
+            </div> -->
+        </div>
+    </mat-card>
+    <div class="exercise-block-list">
+        @for (exerciseBlock of exerciseBlocks$ | async; track $index) {
+        <app-exercise-block
+            [exerciseBlock]="exerciseBlock"
+            (deleteBlock)="onDeleteBlock($event)"
+        ></app-exercise-block>
+        } @empty {
+        <p>Add an exercise for this workout!</p>
+        }
+    </div>
+    <div class="component-footer">
+        <button mat-fab extended color="primary" (click)="onAddBlock()">
+            + Add Block
+        </button>
+    </div>
+</div>

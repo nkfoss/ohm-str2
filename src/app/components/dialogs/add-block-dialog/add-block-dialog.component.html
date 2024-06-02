@@ -1,0 +1,18 @@
+<h1 mat-dialog-title>Add Block</h1>
+<div mat-dialog-content>
+    <app-typeahead-search
+        [placeholder]="'Search or enter new exercise'"
+        [searchResults]="searchResults"
+        [resultDisplayPropertyPath]="'name'"
+        [resultValuePropertyPath]="'name'"
+        [valueFormCtl]="typeaheadValueFormCtl"
+        [displayFormCtl]="typeaheadDisplayFormCtl"
+        [minCharsToSearch]="1"
+        (search)="search($event)"
+    >
+    </app-typeahead-search>
+</div>
+<div mat-dialogp-actions>
+    <button mat-button (click)="onCancel()">Cancel</button>
+    <button mat-button (click)="onAddBlock()">Save</button>
+</div>

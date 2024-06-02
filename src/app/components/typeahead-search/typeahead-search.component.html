@@ -1,0 +1,20 @@
+<div>
+    <mat-form-field>
+        <div>
+            <input
+                matInput
+                placeholder="placeholder"
+                [matAutocomplete]="auto"
+                [formControl]="displayFormCtl"
+                #searchInput
+            />
+        </div>
+        <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onResultSelection($event)">
+            @for (result of searchResults; track result){
+                <mat-option [value]="result" [disabled]="result.disabled">
+                    {{ resultDisplayPropertyPath ? getProp(result, resultDisplayPropertyPath) : result }}
+                </mat-option>
+            }
+        </mat-autocomplete>
+    </mat-form-field>
+</div>

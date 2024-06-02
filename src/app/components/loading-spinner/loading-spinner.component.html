@@ -1,0 +1,23 @@
+<div class="spinner-overlay">
+    <div class="spinner-container">
+        <div class="lds-default">
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+    </div>
+    @if (loadingMessages != null && loadingMessages.length) {
+    <div class="message-container">
+        <span class="loading-message">{{ loadingMessages[0] }}</span>
+    </div>
+    }
+</div>

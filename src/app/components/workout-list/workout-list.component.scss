@@ -1,0 +1,32 @@
+.workout-card {
+    margin-bottom: 8px;
+
+    .tag-subtitle {
+        display: inline-flex;
+
+        .tag-icon {
+            margin-right: 5px
+        }
+    }
+
+    .workout-summary {
+        font-style: italic
+    }
+}
+
+.workout-card:hover {
+    cursor: pointer
+}
+
+.workout-list-toolbar {
+    display: flex;
+    justify-content: space-between;
+
+    .button-container {
+        display: flex;
+        justify-content: flex-end;
+        margin: 10px 0px;
+    }
+}
+
+
