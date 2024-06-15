@@ -15,11 +15,11 @@ export interface ConfirmationDialogData {
     selector: 'confirmation-dialog',
     template: `
     <div class='main-container'>
-        <h1 mat-dialog-title>{{ data.title ?? 'Attention!' }}</h1>
+        <h2 mat-dialog-title>{{ data.title ?? 'Attention!' }}</h2>
         <div mat-dialog-content>
             <p>{{ data.message ?? 'Please confirm your action.' }}</p>
         </div>
-        <div mat-dialog-actions>
+        <div mat-dialog-actions class="actions-container">
             <button
                 mat-raised-button
                 [color]=" data.confirmButtonColor ?? 'primary'"
@@ -39,6 +39,14 @@ export interface ConfirmationDialogData {
     `,
     standalone: true,
     imports: [MatDialogTitle, MatDialogContent, CommonModule, MatButtonModule],
+    styles: `
+        .main-container { overflow-y: hidden; } 
+        .actions-container { 
+            display: flex; 
+            justify-content: 
+            flex-end; padding: 0 20px 20px 0; 
+        }
+    `
 })
 export class ConfirmationDialog {
     constructor(
