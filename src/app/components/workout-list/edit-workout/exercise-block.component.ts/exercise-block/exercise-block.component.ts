@@ -113,7 +113,11 @@ export class ExerciseBlockComponent implements OnChanges {
             ConfirmationDialog,
             ConfirmationDialogData
         >(ConfirmationDialog, {
-            data: { message: 'Are you sure you want to delete this block?' },
+            data: { 
+                message: 'Are you sure you want to delete this block?',
+                confirmButtonColor: 'warn',
+            },
+            
         });
         dialogRef.afterClosed().subscribe((confirmed) => {
             if (confirmed) {
