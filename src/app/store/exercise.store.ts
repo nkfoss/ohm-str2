@@ -9,9 +9,11 @@ import { GenericSnackBarData, GenericSnackbarComponent } from "../components/sna
 
 export interface ExerciseState {
     exercises: Exercise[];
+    newExercise: Exercise | undefined;
 }
 const DEFAULT_STATE: ExerciseState = {
-    exercises: []
+    exercises: [],
+    newExercise: undefined
 }
 @Injectable({
     providedIn: 'root',
@@ -23,8 +25,8 @@ export class ExerciseStore extends ComponentStore<ExerciseState> {
         super(DEFAULT_STATE);
     }
 
-    readonly exercises$ = this.select((state) => state.exercises)
-    
+    readonly exercises$ = this.select((state) => state.exercises);
+    readonly newExercise$ = this.select((state) => state.newExercise);
 
     readonly fetchExercises = this.effect(trigger$ => {
         return trigger$.pipe(
@@ -48,7 +50,7 @@ export class ExerciseStore extends ComponentStore<ExerciseState> {
                         (exercise) => {
                             this.showSuccessSnackbar(exercise.name);
                             this.setState(state => {
-                                return {...state, exercises: [...state.exercises, exercise]}
+                                return {...state, exercises: [...state.exercises, exercise], newExercise: exercise}
                             })
                         },
                         (err) => console.error(err),

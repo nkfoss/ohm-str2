@@ -1,5 +1,4 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { WorkoutService } from '../../../services/workout.service';
 import {
     Exercise,
     ExerciseBlock,
@@ -14,7 +13,7 @@ import {
     Subject,
     Subscription,
     map,
-    take,
+    skip,
     takeUntil,
 } from 'rxjs';
 import { MatIconModule } from '@angular/material/icon';
@@ -26,7 +25,6 @@ import {
 } from '../../dialogs/add-block-dialog/add-block-dialog.component';
 import { filterNullish } from '../../../util/filterNullish';
 import { v4 as uuidv4 } from 'uuid';
-import { ExerciseService } from '../../../services/exercise.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import {
     GenericSnackBarData,
@@ -45,14 +43,8 @@ import {
     ConfirmationDialog,
     ConfirmationDialogData,
 } from '../../dialogs/confirmation-dialog/confirmation-dialog.component';
-import {
-    MatChipEditedEvent,
-    MatChipInputEvent,
-    MatChipsModule,
-} from '@angular/material/chips';
-import { COMMA, ENTER } from '@angular/cdk/keycodes';
+import { MatChipsModule } from '@angular/material/chips';
 import { TypeaheadChipListComponent } from '../../typeahead-search/typeahead-chip-list/typeahead-chip-list.component';
-import { TagService } from '../../../services/tag.service';
 import { WorkoutStore } from '../../../store/workout.store';
 import { ExerciseStore } from '../../../store/exercise.store';
 import { TagStore } from '../../../store/tag.store';
@@ -170,18 +162,16 @@ export class EditWorkoutComponent implements OnInit, OnDestroy {
                 if (match) {
                     this.addNewBlock((match as Exercise).id);
                 } else {
+                    this.exerciseStore.newExercise$
+                        .pipe(skip(1))
+                        .subscribe((created) => {
+                            if (created) {
+                                this.addNewBlock(created.id);
+                            }
+                        });
                     this.exerciseStore.addExercise({
                         name: exerciseName,
                     });
-                    this.exerciseStore.exercises$
-                        .pipe(
-                            take(1),
-                            map((exercises) => exercises[exercises.length - 1])
-                        )
-                        .subscribe((created) => {
-                            // this.showSuccessSnackbar(created.name);
-                            this.addNewBlock(created.id);
-                        });
                 }
             });
     }
