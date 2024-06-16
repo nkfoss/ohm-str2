@@ -147,11 +147,17 @@ export class WorkoutListComponent implements OnInit, OnDestroy {
     }
 
     changeDate(delta: number) {
-        this.selectedMillis$.next(
-            DateTime.fromMillis(this.selectedMillis$.value)
-                .plus({ day: delta })
-                .toMillis()
-        );
+        const params = this.route.snapshot.queryParams;
+        const dt = DateTime.fromFormat(
+            params['day'] + params['month'] + params['year'],
+            'dMyyyy'
+        )
+        this.router.navigate(this.route.snapshot.url, {queryParams: { ...params, day: +params['day'] + delta }})
+        // this.selectedMillis$.next(
+        //     DateTime.fromMillis(this.selectedMillis$.value)
+        //         .plus({ day: delta })
+        //         .toMillis()
+        // );
     }
 
     onCalendarDatePicked(event: MatDatepickerInputEvent<DateTime>) {
