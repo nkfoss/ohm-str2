@@ -1,6 +1,11 @@
 .main-container {
     margin-bottom: 10px;
 
+    .no-sets-message {
+        margin: 10px 0 0 10px;
+        font-style: italic;
+    }
+
     .exercise-block-title {
         padding: 10px 0px 0px 10px
     }

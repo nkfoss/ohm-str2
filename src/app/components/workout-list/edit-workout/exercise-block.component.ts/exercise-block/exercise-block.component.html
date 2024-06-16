@@ -15,7 +15,8 @@
             </mat-card-title-group>
         </mat-card-header>
         <mat-card-content>
-            <table
+            @if (dataSource.length) {
+                <table
                 mat-table
                 [dataSource]="dataSource"
                 class="exercise-block-table"
@@ -57,6 +58,10 @@
                     *matRowDef="let row; columns: displayedColumns"
                 ></tr>
             </table>
+            } @else {
+                <p class="no-sets-message">No sets to show</p>
+            }
+
         </mat-card-content>
         <div class="button-container">
             <button
