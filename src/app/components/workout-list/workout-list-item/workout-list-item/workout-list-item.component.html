@@ -6,13 +6,15 @@
                 <mat-card-subtitle>{{
                     workout.description
                 }}</mat-card-subtitle>
-                <span *ngIf="tagNames.length">
+                <span>
                     <mat-card-subtitle class="tag-subtitle"
-                        ><mat-icon
+                        >
+                        {{ tagNames | join: ', ' }}
+                        <mat-icon
                             class="tag-icon"
                             fontIcon="sell"
                         ></mat-icon>
-                        {{ tagNames | join: ', ' }}</mat-card-subtitle
+                        </mat-card-subtitle
                     >
                 </span>
             </mat-card-title-group>

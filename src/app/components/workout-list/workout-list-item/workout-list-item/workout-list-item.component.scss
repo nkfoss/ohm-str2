@@ -1,3 +1,7 @@
+.tag-icon:hover {
+    cursor: pointer;
+}
+
 .button-container {
     display: flex;
     justify-content: flex-end;
@@ -5,7 +9,6 @@
 
     button:not(:first-child) {
         margin-left: 10px
-
     }
 }
 
