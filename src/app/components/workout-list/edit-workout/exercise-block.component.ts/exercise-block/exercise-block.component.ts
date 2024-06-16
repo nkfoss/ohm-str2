@@ -6,7 +6,7 @@ import {
     Output,
     SimpleChanges,
 } from '@angular/core';
-import { ExerciseBlock, Set } from '../../../../../models/workout.model';
+import { ExerciseBlock, ExerciseSet } from '../../../../../models/workout.model';
 import { SelectionModel } from '@angular/cdk/collections';
 import { MatTableModule } from '@angular/material/table';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -16,7 +16,6 @@ import { MatCardModule } from '@angular/material/card';
 import { MatDialog } from '@angular/material/dialog';
 import { EditSetDialogComponent } from '../../../../dialogs/edit-set-dialog/edit-set-dialog.component';
 import { filterNullish } from '../../../../../util/filterNullish';
-import { ExerciseService } from '../../../../../services/exercise.service';
 import { take } from 'rxjs';
 import {
     ConfirmationDialog,
@@ -51,9 +50,9 @@ export class ExerciseBlockComponent implements OnChanges {
 
     displayedColumns: string[] = ['weight', 'reps', 'actions'];
 
-    dataSource: Set[] = []; //#+-##+-##+-##+-##+-#
+    dataSource: ExerciseSet[] = []; //#+-##+-##+-##+-##+-#
 
-    selection = new SelectionModel<Set>(true, []);
+    selection = new SelectionModel<ExerciseSet>(true, []);
 
     @Output()
     deleteBlock = new EventEmitter<string>();
@@ -73,14 +72,14 @@ export class ExerciseBlockComponent implements OnChanges {
     }
 
     onAddSet() {
-        const dialogRef = this.dialog.open<EditSetDialogComponent, Set, Set>(
+        const dialogRef = this.dialog.open<EditSetDialogComponent, ExerciseSet, ExerciseSet>(
             EditSetDialogComponent,
             { data: {} }
         );
         dialogRef
             .afterClosed()
             .pipe(filterNullish())
-            .subscribe((set: Set) => {
+            .subscribe((set: ExerciseSet) => {
                 this.exerciseBlock.sets.push(set);
                 this.dataSource = [...this.exerciseBlock.sets];
             });
@@ -88,7 +87,7 @@ export class ExerciseBlockComponent implements OnChanges {
 
     onEditSet(index: number) {
         const selected = { ...this.exerciseBlock.sets.at(index) };
-        const dialogRef = this.dialog.open<EditSetDialogComponent, Set, Set>(
+        const dialogRef = this.dialog.open<EditSetDialogComponent, ExerciseSet, ExerciseSet>(
             EditSetDialogComponent,
             {
                 data: selected,
@@ -97,7 +96,7 @@ export class ExerciseBlockComponent implements OnChanges {
         dialogRef
             .afterClosed()
             .pipe(filterNullish())
-            .subscribe((set: Set) => {
+            .subscribe((set: ExerciseSet) => {
                 this.exerciseBlock.sets[index] = set;
                 this.dataSource = [...this.exerciseBlock.sets];
             });

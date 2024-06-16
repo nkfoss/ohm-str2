@@ -4,7 +4,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { Set } from '../../../models/workout.model';
+import { ExerciseSet } from '../../../models/workout.model';
 
 @Component({
   selector: 'app-edit-set-dialog',
@@ -15,8 +15,8 @@ import { Set } from '../../../models/workout.model';
 })
 export class EditSetDialogComponent {
     constructor(
-        public dialogRef: MatDialogRef<EditSetDialogComponent, Set>,
-        @Inject(MAT_DIALOG_DATA) public data: Set
+        public dialogRef: MatDialogRef<EditSetDialogComponent, ExerciseSet>,
+        @Inject(MAT_DIALOG_DATA) public data: ExerciseSet
     ) {}
 
     onCancel() {

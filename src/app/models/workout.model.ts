@@ -18,7 +18,7 @@ export interface WorkoutView extends Workout {
 export interface ExerciseBlock extends UserInteractable {
     id: string;
     exerciseId?: string;
-    sets: Set[];
+    sets: ExerciseSet[];
 }
 export interface ExerciseBlockView extends ExerciseBlock {
     exerciseName: string;
@@ -29,7 +29,7 @@ export interface Exercise extends UserInteractable {
     id?: string;
 }
 
-export interface Set extends UserInteractable {
+export interface ExerciseSet extends UserInteractable {
     id?: string;
     weight?: number;
     reps?: number;
@@ -44,6 +44,6 @@ export interface PersonalRecord {
     id?: string;
     exerciseName?: string;
     setPath?: string;
-    oldRecord?: Set;
-    newRecord?: Set;
+    oldRecord?: ExerciseSet;
+    newRecord?: ExerciseSet;
 }

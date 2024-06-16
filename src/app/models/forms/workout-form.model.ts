@@ -5,7 +5,7 @@ import {
     FormGroup,
     UntypedFormControl,
 } from '@angular/forms';
-import { Exercise, ExerciseBlock, Set, Workout } from '../workout.model';
+import { Exercise, ExerciseBlock, ExerciseSet, Workout } from '../workout.model';
 
 export class WorkoutForm {
     fb = new FormBuilder();
@@ -52,7 +52,7 @@ export class SetForm {
 
     checked = new FormControl<boolean>(false);
 
-    constructor(set?: Set) {
+    constructor(set?: ExerciseSet) {
         if (set) {
             this.weight.setValue(set.weight ?? 0);
             this.reps.setValue(set.reps ?? 0);
