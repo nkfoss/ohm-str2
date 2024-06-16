@@ -1,7 +1,7 @@
 import { CommonModule } from "@angular/common";
 import { Component, Inject } from "@angular/core";
 import { MatButtonModule } from "@angular/material/button";
-import { MAT_DIALOG_DATA, MatDialogContent, MatDialogRef, MatDialogTitle } from "@angular/material/dialog";
+import { MAT_DIALOG_DATA, MatDialogActions, MatDialogContent, MatDialogRef, MatDialogTitle } from "@angular/material/dialog";
 
 export interface ConfirmationDialogData {
     title?: string;
@@ -38,7 +38,7 @@ export interface ConfirmationDialogData {
 </div>
     `,
     standalone: true,
-    imports: [MatDialogTitle, MatDialogContent, CommonModule, MatButtonModule],
+    imports: [MatDialogTitle, MatDialogContent, MatDialogActions, CommonModule, MatButtonModule],
     styles: `
         .main-container { overflow-y: hidden; } 
         .actions-container { 

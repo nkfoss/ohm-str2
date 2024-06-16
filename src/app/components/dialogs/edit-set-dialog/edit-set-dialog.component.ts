@@ -1,7 +1,7 @@
 import { Component, Inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogActions, MatDialogContent, MatDialogRef, MatDialogTitle } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { ExerciseSet } from '../../../models/workout.model';
@@ -9,7 +9,7 @@ import { ExerciseSet } from '../../../models/workout.model';
 @Component({
   selector: 'app-edit-set-dialog',
   standalone: true,
-  imports: [MatFormFieldModule, MatInputModule, MatButtonModule, FormsModule],
+  imports: [MatFormFieldModule, MatInputModule, MatButtonModule, FormsModule, MatDialogTitle, MatDialogContent, MatDialogActions],
   templateUrl: './edit-set-dialog.component.html',
   styleUrl: './edit-set-dialog.component.scss'
 })
