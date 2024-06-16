@@ -1,18 +1,20 @@
-<h1 mat-dialog-title>Add Block</h1>
-<div mat-dialog-content>
-    <app-typeahead-search
-        [placeholder]="'Search or enter new exercise'"
-        [searchResults]="searchResults"
-        [resultDisplayPropertyPath]="'name'"
-        [resultValuePropertyPath]="'name'"
-        [valueFormCtl]="typeaheadValueFormCtl"
-        [displayFormCtl]="typeaheadDisplayFormCtl"
-        [minCharsToSearch]="1"
-        (search)="search($event)"
-    >
-    </app-typeahead-search>
-</div>
-<div mat-dialogp-actions>
-    <button mat-button (click)="onCancel()">Cancel</button>
-    <button mat-button (click)="onAddBlock()">Save</button>
+<div class="main-container">
+    <h1 mat-dialog-title>Add Block</h1>
+    <div mat-dialog-content>
+        <app-typeahead-search
+            [placeholder]="'Search or enter new exercise'"
+            [searchResults]="searchResults"
+            [resultDisplayPropertyPath]="'name'"
+            [resultValuePropertyPath]="'name'"
+            [valueFormCtl]="typeaheadValueFormCtl"
+            [displayFormCtl]="typeaheadDisplayFormCtl"
+            [minCharsToSearch]="1"
+            (search)="search($event)"
+        >
+        </app-typeahead-search>
+    </div>
+    <div mat-dialog-actions class="actions-container">
+        <button mat-raised-button (click)="onCancel()">Cancel</button>
+        <button mat-raised-button color="primary" (click)="onAddBlock()">Save</button>
+    </div>
 </div>

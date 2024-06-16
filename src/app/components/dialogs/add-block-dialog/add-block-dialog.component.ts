@@ -1,5 +1,5 @@
 import { Component, Inject } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogContent, MatDialogRef, MatDialogTitle } from '@angular/material/dialog';
 import { TypeaheadSearchComponent } from '../../typeahead-search/typeahead-search.component';
 import { Exercise } from '../../../models/workout.model';
 import { FormControl } from '@angular/forms';
@@ -12,9 +12,16 @@ export interface AddBlockDialogData {
 @Component({
   selector: 'app-add-block-dialog',
   standalone: true,
-  imports: [TypeaheadSearchComponent, MatButtonModule],
+  imports: [TypeaheadSearchComponent, MatButtonModule, MatDialogTitle, MatDialogContent],
   templateUrl: './add-block-dialog.component.html',
-  styleUrl: './add-block-dialog.component.scss'
+  styles: `
+        .main-container { overflow-y: hidden; } 
+        .actions-container { 
+            display: flex; 
+            justify-content: 
+            flex-end; padding: 0 20px 20px 0; 
+        }
+    `
 })
 export class AddBlockDialogComponent {
 
