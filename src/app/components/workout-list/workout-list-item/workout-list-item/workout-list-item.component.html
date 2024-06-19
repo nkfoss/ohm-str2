@@ -11,6 +11,7 @@
                         >
                         {{ tagNames | join: ', ' }}
                         <mat-icon
+                        (click)="onEditTags()"
                             class="tag-icon"
                             fontIcon="sell"
                         ></mat-icon>

@@ -25,6 +25,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { Subject, takeUntil } from 'rxjs';
 import { ExerciseStore } from '../../../../store/exercise.store';
 import { TagStore } from '../../../../store/tag.store';
+import { MatDialog } from '@angular/material/dialog';
 
 @Pipe({
     name: 'exerciseBlockSummary',
@@ -68,7 +69,8 @@ export class WorkoutListItemComponent implements OnChanges, OnDestroy {
 
     tagNames: string[] = [];
 
-    constructor(private exerciseStore: ExerciseStore, private tagStore: TagStore) {}
+    constructor(private exerciseStore: ExerciseStore, private tagStore: TagStore, private dialog: MatDialog,
+    ) {}
 
     ngOnChanges(changes: SimpleChanges): void {
         this.exerciseStore.exercises$
@@ -117,6 +119,10 @@ export class WorkoutListItemComponent implements OnChanges, OnDestroy {
 
     onEditWorkout() {
         this.editWorkout.emit(this.workout.id);
+    }
+
+    onEditTags() {
+        console.log("qwe")
     }
 
     onDeleteWorkout() {
