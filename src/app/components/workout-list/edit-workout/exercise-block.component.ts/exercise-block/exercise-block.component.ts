@@ -18,7 +18,7 @@ import { EditSetDialogComponent } from '../../../../dialogs/edit-set-dialog/edit
 import { filterNullish } from '../../../../../util/filterNullish';
 import { take } from 'rxjs';
 import {
-    ConfirmationDialog,
+    ConfirmationDialogComponent,
     ConfirmationDialogData,
 } from '../../../../dialogs/confirmation-dialog/confirmation-dialog.component';
 import { ExerciseStore } from '../../../../../store/exercise.store';
@@ -50,7 +50,7 @@ export class ExerciseBlockComponent implements OnChanges {
 
     displayedColumns: string[] = ['weight', 'reps', 'actions'];
 
-    dataSource: ExerciseSet[] = []; //#+-##+-##+-##+-##+-#
+    dataSource: ExerciseSet[] = [];
 
     selection = new SelectionModel<ExerciseSet>(true, []);
 
@@ -109,9 +109,9 @@ export class ExerciseBlockComponent implements OnChanges {
 
     onDeleteBlock() {
         const dialogRef = this.dialog.open<
-            ConfirmationDialog,
+            ConfirmationDialogComponent,
             ConfirmationDialogData
-        >(ConfirmationDialog, {
+        >(ConfirmationDialogComponent, {
             data: { 
                 message: 'Are you sure you want to delete this block?',
                 confirmButtonColor: 'warn',

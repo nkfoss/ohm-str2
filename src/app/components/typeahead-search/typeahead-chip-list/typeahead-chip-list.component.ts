@@ -10,7 +10,6 @@ import {
     ViewChild,
 } from '@angular/core';
 import {
-    MatChipEditedEvent,
     MatChipInputEvent,
     MatChipsModule,
 } from '@angular/material/chips';
@@ -30,6 +29,7 @@ import {
     fromEvent,
     takeUntil,
 } from 'rxjs';
+import { MatInputModule } from '@angular/material/input';
 
 @Component({
     selector: 'app-typeahead-chip-list',
@@ -43,6 +43,7 @@ import {
         MatIconModule,
         MatAutocompleteModule,
         ReactiveFormsModule,
+        MatInputModule
     ],
 })
 export class TypeaheadChipListComponent implements AfterViewInit, OnDestroy {
@@ -131,44 +132,31 @@ export class TypeaheadChipListComponent implements AfterViewInit, OnDestroy {
         event.chipInput!.clear();
     }
 
-    remove(item: any): void {
-        const index = this.chipItems?.indexOf(item) ?? -1;
+    remove(index: number): void {
+
+        // const index = this.chipItems?.indexOf(item) ?? -1;
         if (index >= 0) {
             this.chipItems?.splice(index, 1);
         }
     }
 
-    edit(item: any, event: MatChipEditedEvent) {
-        const value = event.value.trim();
-
-        // Remove fruit if it no longer has a name
-        if (!value) {
-            this.remove(item);
-            return;
-        }
-
-        // Edit existing fruit
-        const index = this.chipItems?.indexOf(item) ?? -1;
-        if (this.chipItems && index >= 0) {
-            this.chipItems[index].name = value;
-        }
-    }
-
     onResultSelection(event: MatAutocompleteSelectedEvent) {
-        if (this.resultValuePropertyPath) {
-            this.valueFormCtl.setValue(
-                this.getProp(event.option.value, this.resultValuePropertyPath)
-            );
-        } else {
-            this.valueFormCtl.setValue(event.option.value);
-        }
-        if (this.resultDisplayPropertyPath) {
-            this.displayFormCtl.setValue(
-                this.getProp(event.option.value, this.resultDisplayPropertyPath)
-            );
-        } else {
-            this.displayFormCtl.setValue(event.option.value);
-        }
+        // if (this.resultValuePropertyPath) {
+        //     this.valueFormCtl.setValue(
+        //         this.getProp(event.option.value, this.resultValuePropertyPath)
+        //     );
+        // } else {
+        //     this.valueFormCtl.setValue(event.option.value);
+        // }
+        // if (this.resultDisplayPropertyPath) {
+        //     this.displayFormCtl.setValue(
+        //         this.getProp(event.option.value, this.resultDisplayPropertyPath)
+        //     );
+        // } else {
+        //     this.displayFormCtl.setValue(event.option.value);
+        // }
+        this.valueFormCtl.reset();
+        this.displayFormCtl.reset();
         this.resultSelection.emit(event);
     }
 

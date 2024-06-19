@@ -7,7 +7,7 @@ import {
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DateTime, DateTimeFormatOptions } from 'luxon';
-import { Workout } from '../../models/workout.model';
+import { Tag, Workout } from '../../models/workout.model';
 import { BehaviorSubject, Observable, Subject, map, takeUntil } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
@@ -22,10 +22,12 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { WorkoutListItemComponent } from './workout-list-item/workout-list-item/workout-list-item.component';
 import { MatDialog } from '@angular/material/dialog';
 import {
-    ConfirmationDialog,
+    ConfirmationDialogComponent,
     ConfirmationDialogData,
 } from '../dialogs/confirmation-dialog/confirmation-dialog.component';
 import { WorkoutStore } from '../../store/workout.store';
+import { TypeaheadChipListComponent } from '../typeahead-search/typeahead-chip-list/typeahead-chip-list.component';
+import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 
 @Pipe({
     name: 'millisToLocalDateString',
@@ -63,6 +65,7 @@ export class WorkoutSortPipe implements PipeTransform {
         MatFormFieldModule,
         MillisToLocalDateStringPipe,
         WorkoutSortPipe,
+        TypeaheadChipListComponent
     ],
     templateUrl: './workout-list.component.html',
     styleUrl: './workout-list.component.scss',
@@ -131,9 +134,9 @@ export class WorkoutListComponent implements OnInit, OnDestroy {
 
     onDeleteWorkout(workoutId: string) {
         const dialogRef = this.dialog.open<
-            ConfirmationDialog,
+            ConfirmationDialogComponent,
             ConfirmationDialogData
-        >(ConfirmationDialog, {
+        >(ConfirmationDialogComponent, {
             data: {
                 message: 'Are you sure you want to delete this workout?',
                 confirmButtonColor: 'warn',
@@ -164,5 +167,18 @@ export class WorkoutListComponent implements OnInit, OnDestroy {
         if (event.value) {
             this.selectedMillis$.next(event.value.toMillis());
         }
+    }
+
+    tagSearchResults: string[] = [];
+    onTagSearch(tagName: string) {
+        const tags = ['alpha', 'bravo', 'charlie'];
+        this.tagSearchResults = tags
+            .filter(tag => tag.includes(tagName));
+
+    }
+
+    chipList: string[] = [];
+    onTagSelected(event: MatAutocompleteSelectedEvent) {
+        this.chipList.push(event.option.value);
     }
 }

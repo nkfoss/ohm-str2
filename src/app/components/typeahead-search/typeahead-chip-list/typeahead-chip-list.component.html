@@ -1,4 +1,4 @@
-<mat-form-field class="example-chip-list">
+<!-- <mat-form-field class="example-chip-list">
     <mat-label>Favorite Fruits</mat-label>
     <mat-chip-grid #chipGrid aria-label="Enter fruits">
         @for (chipItem of chipItems; track chipItem) {
@@ -9,9 +9,7 @@
             [aria-description]="'press enter to edit ' + chipItem.name"
         >
             {{
-                resultDisplayPropertyPath
-                    ? getProp(chipItem, resultDisplayPropertyPath)
-                    : chipItem
+                chipItem
             }}
             <button matChipRemove [attr.aria-label]="'remove ' + chipItem.name">
                 <mat-icon>cancel</mat-icon>
@@ -43,4 +41,38 @@
             }
         </mat-autocomplete>
     </mat-chip-grid>
-</mat-form-field>
+</mat-form-field> -->
+<div class="main-container">
+    <mat-form-field>
+        <input
+        matInput
+        placeholder="New fruit..."
+        [matAutocomplete]="auto"
+        [formControl]="displayFormCtl"
+        #searchInput
+    />
+    <mat-autocomplete
+        #auto="matAutocomplete"
+        (optionSelected)="onResultSelection($event)"
+    >
+        @for (result of searchResults; track result){
+        <mat-option [value]="result" [disabled]="chipItems?.includes(result)">
+            {{
+                resultDisplayPropertyPath
+                    ? getProp(result, resultDisplayPropertyPath)
+                    : result
+            }}
+        </mat-option>
+        }
+    </mat-autocomplete>
+    </mat-form-field>
+    <div class="chip-list-container">
+        <mat-chip-listbox #chipList>
+            @for (chip of chipItems; track $index) {
+                <mat-chip-option removable highlighted selectable="false" (removed)="remove($index)">
+                    {{ chip }} <mat-icon matChipRemove>cancel</mat-icon>
+                </mat-chip-option>
+            }
+        </mat-chip-listbox>
+    </div>
+</div>

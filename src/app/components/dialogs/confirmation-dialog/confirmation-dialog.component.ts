@@ -12,7 +12,7 @@ export interface ConfirmationDialogData {
     denyButtonColor?: string;
 }
 @Component({
-    selector: 'confirmation-dialog',
+    selector: 'confirmation-dialog-component',
     template: `
     <div class='main-container'>
         <h2 mat-dialog-title>{{ data.title ?? 'Attention!' }}</h2>
@@ -48,9 +48,9 @@ export interface ConfirmationDialogData {
         }
     `
 })
-export class ConfirmationDialog {
+export class ConfirmationDialogComponent {
     constructor(
-        public dialogRef: MatDialogRef<ConfirmationDialog>,
+        public dialogRef: MatDialogRef<ConfirmationDialogComponent>,
         @Inject(MAT_DIALOG_DATA) public data: ConfirmationDialogData
     ) {}
 
