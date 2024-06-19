@@ -10,8 +10,10 @@ import { AsyncPipe, CommonModule, Location } from '@angular/common';
 import { WorkoutForm } from '../../../models/forms/workout-form.model';
 import {
     BehaviorSubject,
+    Observable,
     Subject,
     Subscription,
+    filter,
     map,
     skip,
     takeUntil,
@@ -25,11 +27,6 @@ import {
 } from '../../dialogs/add-block-dialog/add-block-dialog.component';
 import { filterNullish } from '../../../util/filterNullish';
 import { v4 as uuidv4 } from 'uuid';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import {
-    GenericSnackBarData,
-    GenericSnackbarComponent,
-} from '../../snackbars/generic-snackbar/generic-snackbar.component';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -40,7 +37,7 @@ import {
     ReactiveFormsModule,
 } from '@angular/forms';
 import {
-    ConfirmationDialog,
+    ConfirmationDialogComponent,
     ConfirmationDialogData,
 } from '../../dialogs/confirmation-dialog/confirmation-dialog.component';
 import { MatChipsModule } from '@angular/material/chips';
@@ -103,8 +100,7 @@ export class EditWorkoutComponent implements OnInit, OnDestroy {
         private tagStore: TagStore,
         private route: ActivatedRoute,
         private location: Location,
-        private dialog: MatDialog,
-        private snackBar: MatSnackBar
+        private dialog: MatDialog
     ) {}
 
     ngOnDestroy(): void {
@@ -160,20 +156,41 @@ export class EditWorkoutComponent implements OnInit, OnDestroy {
                     (ex) => ex.name === exerciseName
                 );
                 if (match) {
-                    this.addNewBlock((match as Exercise).id);
+                    this.addNewBlock(match.id);
                 } else {
-                    this.exerciseStore.newExercise$
-                        .pipe(skip(1))
-                        .subscribe((created) => {
-                            if (created) {
-                                this.addNewBlock(created.id);
-                            }
+                    this.confirmCreateNewExercise(exerciseName)
+                        .pipe(filter((confirm) => !!confirm))
+                        .subscribe((confirmed) => {
+                            this.addNewBlockOnExerciseCreation(exerciseName);
                         });
-                    this.exerciseStore.addExercise({
-                        name: exerciseName,
-                    });
                 }
             });
+    }
+
+    private confirmCreateNewExercise(name: string): Observable<boolean> {
+        const dialogRef = this.dialog.open<
+            ConfirmationDialogComponent,
+            ConfirmationDialogData,
+            boolean
+        >(ConfirmationDialogComponent, {
+            width: '400px',
+            data: {
+                title: 'Create New Exercise',
+                message: `Create new exercise ${name}?`,
+            },
+        });
+        return dialogRef.afterClosed().pipe(filterNullish());
+    }
+
+    private addNewBlockOnExerciseCreation(exerciseName: string) {
+        this.exerciseStore.newExercise$.pipe(skip(1)).subscribe((created) => {
+            if (created) {
+                this.addNewBlock(created.id);
+            }
+        });
+        this.exerciseStore.addExercise({
+            name: exerciseName,
+        });
     }
 
     private addNewBlock(exerciseId?: string) {
@@ -184,20 +201,6 @@ export class EditWorkoutComponent implements OnInit, OnDestroy {
         };
         this.selectedWorkout.exerciseBlocks.push(newBlock);
         this.exerciseBlocks$.next(this.selectedWorkout.exerciseBlocks.slice());
-    }
-
-    private showSuccessSnackbar(exerciseName?: string) {
-        this.snackBar.openFromComponent<
-            GenericSnackbarComponent,
-            GenericSnackBarData
-        >(GenericSnackbarComponent, {
-            data: {
-                message: `Created exercise "${exerciseName}"!`,
-            },
-            verticalPosition: 'bottom',
-            panelClass: ['generic-snack-bar-success'],
-            duration: 2000,
-        });
     }
 
     onSave() {
@@ -220,9 +223,9 @@ export class EditWorkoutComponent implements OnInit, OnDestroy {
     onNavigateBack() {
         if (this.changes) {
             const dialogRef = this.dialog.open<
-                ConfirmationDialog,
+                ConfirmationDialogComponent,
                 ConfirmationDialogData
-            >(ConfirmationDialog, {
+            >(ConfirmationDialogComponent, {
                 data: { message: 'Discard unsaved changes?' },
             });
             dialogRef.afterClosed().subscribe((confirmed) => {
