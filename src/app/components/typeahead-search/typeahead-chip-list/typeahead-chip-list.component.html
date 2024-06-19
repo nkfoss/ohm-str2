@@ -43,36 +43,37 @@
     </mat-chip-grid>
 </mat-form-field> -->
 <div class="main-container">
-    <mat-form-field>
+    <app-typeahead-search
+        [valueFormCtl]="valueFormCtl"
+        [displayFormCtl]="displayFormCtl"
+        [resultDisplayPropertyPath]="resultDisplayPropertyPath"
+        [resultValuePropertyPath]="resultValuePropertyPath"
+    ></app-typeahead-search>
+    <!-- <mat-form-field>
         <input
-        matInput
-        placeholder="New fruit..."
-        [matAutocomplete]="auto"
-        [formControl]="displayFormCtl"
-        #searchInput
-    />
-    <mat-autocomplete
-        #auto="matAutocomplete"
-        (optionSelected)="onResultSelection($event)"
-    >
-        @for (result of searchResults; track result){
-        <mat-option [value]="result" [disabled]="chipItems?.includes(result)">
-            {{
-                resultDisplayPropertyPath
-                    ? getProp(result, resultDisplayPropertyPath)
-                    : result
-            }}
-        </mat-option>
-        }
-    </mat-autocomplete>
-    </mat-form-field>
-    <div class="chip-list-container">
-        <mat-chip-listbox #chipList>
-            @for (chip of chipItems; track $index) {
-                <mat-chip-option removable highlighted selectable="false" (removed)="remove($index)">
-                    {{ chip }} <mat-icon matChipRemove>cancel</mat-icon>
-                </mat-chip-option>
+            matInput
+            placeholder="New fruit..."
+            [matAutocomplete]="auto"
+            [formControl]="displayFormCtl"
+            #searchInput
+        />
+        <mat-autocomplete
+            #auto="matAutocomplete"
+            (optionSelected)="onResultSelection($event)"
+        >
+            @for (result of searchResults; track result){
+            <mat-option
+                [value]="result"
+                [disabled]="chipItems?.includes(result)"
+            >
+                {{
+                    resultDisplayPropertyPath
+                        ? getProp(result, resultDisplayPropertyPath)
+                        : result
+                }}
+            </mat-option>
             }
-        </mat-chip-listbox>
-    </div>
+        </mat-autocomplete>
+    </mat-form-field> -->
+    <app-chip-list [chipItems]="chipItems"></app-chip-list>
 </div>

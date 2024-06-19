@@ -30,6 +30,7 @@ import {
     takeUntil,
 } from 'rxjs';
 import { MatInputModule } from '@angular/material/input';
+import { ChipListComponent } from '../../chip-list/chip-list.component';
 
 @Component({
     selector: 'app-typeahead-chip-list',
@@ -38,6 +39,7 @@ import { MatInputModule } from '@angular/material/input';
     styleUrl: './typeahead-chip-list.component.scss',
     imports: [
         TypeaheadSearchComponent,
+        ChipListComponent,
         MatFormFieldModule,
         MatChipsModule,
         MatIconModule,
@@ -133,28 +135,12 @@ export class TypeaheadChipListComponent implements AfterViewInit, OnDestroy {
     }
 
     remove(index: number): void {
-
-        // const index = this.chipItems?.indexOf(item) ?? -1;
         if (index >= 0) {
             this.chipItems?.splice(index, 1);
         }
     }
 
     onResultSelection(event: MatAutocompleteSelectedEvent) {
-        // if (this.resultValuePropertyPath) {
-        //     this.valueFormCtl.setValue(
-        //         this.getProp(event.option.value, this.resultValuePropertyPath)
-        //     );
-        // } else {
-        //     this.valueFormCtl.setValue(event.option.value);
-        // }
-        // if (this.resultDisplayPropertyPath) {
-        //     this.displayFormCtl.setValue(
-        //         this.getProp(event.option.value, this.resultDisplayPropertyPath)
-        //     );
-        // } else {
-        //     this.displayFormCtl.setValue(event.option.value);
-        // }
         this.valueFormCtl.reset();
         this.displayFormCtl.reset();
         this.resultSelection.emit(event);
