@@ -82,7 +82,7 @@ export class TypeaheadSearchComponent implements AfterViewInit, OnDestroy {
                         (results.target as HTMLInputElement).value.length >=
                         this.minCharsToSearch
                 ),
-                debounceTime(300),
+                debounceTime(100),
                 takeUntil(this.onDestroy$)
             )
             .subscribe((results) => {
