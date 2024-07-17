@@ -189,7 +189,7 @@ export class WorkoutService {
             description: "Yesterday's Workout",
             exerciseBlocks: [...this.exerciseBlocks],
             notes: 'before',
-            tagIds: [],
+            tagIds: ['3'],
         },
         {
             id: 'zxc-qwe',
@@ -198,7 +198,7 @@ export class WorkoutService {
             description: "Tommorow's Workout",
             exerciseBlocks: [...this.exerciseBlocks],
             notes: 'after',
-            tagIds: [],
+            tagIds: ['4'],
         },
     ];
 }
