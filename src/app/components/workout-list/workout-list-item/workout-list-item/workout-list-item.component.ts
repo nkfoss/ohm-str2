@@ -79,7 +79,6 @@ export class WorkoutListItemComponent implements  OnChanges, OnDestroy {
     dataSource: ExerciseBlockTableData[] = [];
 
     $tagNames = computed(() => {
-        console.log("computing tags names")
         const tags = this.$workout().tagIds
         return this.tagStore
             .$tags()
@@ -95,7 +94,6 @@ export class WorkoutListItemComponent implements  OnChanges, OnDestroy {
     ) {}
 
     ngOnChanges(changes: SimpleChanges): void {
-        console.log("changes", changes)
         this.exerciseStore.exercises$
             .pipe(takeUntil(this.onDestroy$))
             .subscribe((exercises) => {

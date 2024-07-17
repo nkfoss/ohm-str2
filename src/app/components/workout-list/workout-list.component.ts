@@ -1,16 +1,13 @@
 import {
     Component,
-    OnDestroy,
     OnInit,
     Pipe,
     PipeTransform,
     computed,
-    signal,
 } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Params, Router } from '@angular/router';
 import { DateTime, DateTimeFormatOptions } from 'luxon';
 import { Workout } from '../../models/workout.model';
-import { BehaviorSubject, Observable, Subject, map, takeUntil } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -30,7 +27,7 @@ import {
 import { WorkoutStore } from '../../store/workout.store';
 import { TypeaheadChipListComponent } from '../complex/typeahead-chip-list/typeahead-chip-list.component';
 import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
-import { toSignal } from '@angular/core/rxjs-interop'; // Import toSignal from Angular RxJS interop
+import { toSignal } from '@angular/core/rxjs-interop';
 
 @Pipe({
     name: 'millisToLocalDateString',
@@ -73,7 +70,7 @@ export class WorkoutSortPipe implements PipeTransform {
     templateUrl: './workout-list.component.html',
     styleUrl: './workout-list.component.scss',
 })
-export class WorkoutListComponent implements OnInit, OnDestroy {
+export class WorkoutListComponent implements OnInit {
     protected readonly navDateFormat: DateTimeFormatOptions = {
         weekday: 'short',
         month: 'short',
@@ -81,7 +78,6 @@ export class WorkoutListComponent implements OnInit, OnDestroy {
         year: 'numeric',
     };
 
-    private onDestroy$: Subject<void> = new Subject();
     $selectedWorkouts = computed(() => {
         const workouts = this.workoutStore.$workouts().filter((workout) => {
             return (
@@ -93,20 +89,19 @@ export class WorkoutListComponent implements OnInit, OnDestroy {
                     .toMillis()
             );
         });
-        console.log("computing workouts", workouts)
         return workouts;
     });
     $params = toSignal(this.route.queryParams);
     $selectedMillis = computed<number>(() => {
         const params = this.$params();
+        let selectedMillis = 0;
         if (params && params['day'] && params['month'] && params['year']) {
-            return DateTime.fromFormat(
+            selectedMillis = DateTime.fromFormat(
                 params['day'] + params['month'] + params['year'],
                 'dMyyyy'
             ).toMillis();
-        } else {
-            return 0;
         }
+        return selectedMillis;
     });
 
     constructor(
@@ -116,16 +111,10 @@ export class WorkoutListComponent implements OnInit, OnDestroy {
         private workoutStore: WorkoutStore
     ) {}
 
-    ngOnDestroy(): void {
-        this.onDestroy$.next();
-        this.onDestroy$.complete();
-    }
-
     ngOnInit(): void {
-        const selectedMillis = this.$selectedMillis();
-        if (selectedMillis) {
-            this.workoutStore.fetchWorkouts(selectedMillis);
-        }
+        this.route.queryParams.subscribe(_ => {
+            this.workoutStore.fetchWorkouts(this.$selectedMillis());
+        })
     }
 
     onEditWorkout(workoutId: string) {
