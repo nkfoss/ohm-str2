@@ -1,8 +1,8 @@
 <div class="chip-list-container">
     <mat-chip-listbox #chipList>
         @for (chip of chipItems; track $index) {
-            <mat-chip-option removable highlighted selectable="false" (removed)="remove($index)">
-                {{ chip }} <mat-icon matChipRemove>cancel</mat-icon>
+            <mat-chip-option removable highlighted selectable="false" (removed)="chipRemoved.emit($index)" [color]="chip.color">
+                {{ displayValuePropertyPath ? getProp(chip.item, displayValuePropertyPath) : chip.item }} <mat-icon matChipRemove>cancel</mat-icon>
             </mat-chip-option>
         }
     </mat-chip-listbox>

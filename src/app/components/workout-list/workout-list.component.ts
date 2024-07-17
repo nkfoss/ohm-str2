@@ -4,10 +4,12 @@ import {
     OnInit,
     Pipe,
     PipeTransform,
+    computed,
+    signal,
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DateTime, DateTimeFormatOptions } from 'luxon';
-import { Tag, Workout } from '../../models/workout.model';
+import { Workout } from '../../models/workout.model';
 import { BehaviorSubject, Observable, Subject, map, takeUntil } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
@@ -26,8 +28,9 @@ import {
     ConfirmationDialogData,
 } from '../dialogs/confirmation-dialog/confirmation-dialog.component';
 import { WorkoutStore } from '../../store/workout.store';
-import { TypeaheadChipListComponent } from '../typeahead-search/typeahead-chip-list/typeahead-chip-list.component';
+import { TypeaheadChipListComponent } from '../complex/typeahead-chip-list/typeahead-chip-list.component';
 import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
+import { toSignal } from '@angular/core/rxjs-interop'; // Import toSignal from Angular RxJS interop
 
 @Pipe({
     name: 'millisToLocalDateString',
@@ -65,7 +68,7 @@ export class WorkoutSortPipe implements PipeTransform {
         MatFormFieldModule,
         MillisToLocalDateStringPipe,
         WorkoutSortPipe,
-        TypeaheadChipListComponent
+        TypeaheadChipListComponent,
     ],
     templateUrl: './workout-list.component.html',
     styleUrl: './workout-list.component.scss',
@@ -79,8 +82,32 @@ export class WorkoutListComponent implements OnInit, OnDestroy {
     };
 
     private onDestroy$: Subject<void> = new Subject();
-    selectedWorkouts$!: Observable<Workout[]>;
-    protected selectedMillis$ = new BehaviorSubject(0);
+    $selectedWorkouts = computed(() => {
+        const workouts = this.workoutStore.$workouts().filter((workout) => {
+            return (
+                DateTime.fromMillis(workout.instantMillis)
+                    .startOf('day')
+                    .toMillis() ==
+                DateTime.fromMillis(this.$selectedMillis())
+                    .startOf('day')
+                    .toMillis()
+            );
+        });
+        console.log("computing workouts", workouts)
+        return workouts;
+    });
+    $params = toSignal(this.route.queryParams);
+    $selectedMillis = computed<number>(() => {
+        const params = this.$params();
+        if (params && params['day'] && params['month'] && params['year']) {
+            return DateTime.fromFormat(
+                params['day'] + params['month'] + params['year'],
+                'dMyyyy'
+            ).toMillis();
+        } else {
+            return 0;
+        }
+    });
 
     constructor(
         private route: ActivatedRoute,
@@ -95,34 +122,10 @@ export class WorkoutListComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit(): void {
-        this.selectedWorkouts$ = this.workoutStore.workouts$.pipe(
-            map((workouts) =>
-                workouts.filter((workout) => {
-                    return (
-                        DateTime.fromMillis(workout.instantMillis)
-                            .startOf('day')
-                            .toMillis() ==
-                        DateTime.fromMillis(this.selectedMillis$.value)
-                            .startOf('day')
-                            .toMillis()
-                    );
-                })
-            ),
-            takeUntil(this.onDestroy$)
-        );
-
-        this.selectedMillis$
-            .pipe(takeUntil(this.onDestroy$))
-            .subscribe((millis) => this.workoutStore.fetchWorkouts(millis));
-
-        this.route.queryParams.subscribe((params) => {
-            this.selectedMillis$.next(
-                DateTime.fromFormat(
-                    params['day'] + params['month'] + params['year'],
-                    'dMyyyy'
-                ).toMillis()
-            );
-        });
+        const selectedMillis = this.$selectedMillis();
+        if (selectedMillis) {
+            this.workoutStore.fetchWorkouts(selectedMillis);
+        }
     }
 
     onEditWorkout(workoutId: string) {
@@ -150,31 +153,24 @@ export class WorkoutListComponent implements OnInit, OnDestroy {
     }
 
     changeDate(delta: number) {
-        const params = this.route.snapshot.queryParams;
-        const dt = DateTime.fromFormat(
-            params['day'] + params['month'] + params['year'],
-            'dMyyyy'
-        )
-        this.router.navigate(this.route.snapshot.url, {queryParams: { ...params, day: +params['day'] + delta }})
-        // this.selectedMillis$.next(
-        //     DateTime.fromMillis(this.selectedMillis$.value)
-        //         .plus({ day: delta })
-        //         .toMillis()
-        // );
+        const params = this.$params();
+        if (params) {
+            this.router.navigate(this.route.snapshot.url, {
+                queryParams: { ...params, day: Number(params['day']) + delta },
+            });
+        }
     }
 
     onCalendarDatePicked(event: MatDatepickerInputEvent<DateTime>) {
         if (event.value) {
-            this.selectedMillis$.next(event.value.toMillis());
+            console.log('val', event.value)
         }
     }
 
     tagSearchResults: string[] = [];
     onTagSearch(tagName: string) {
         const tags = ['alpha', 'bravo', 'charlie'];
-        this.tagSearchResults = tags
-            .filter(tag => tag.includes(tagName));
-
+        this.tagSearchResults = tags.filter((tag) => tag.includes(tagName));
     }
 
     chipList: string[] = [];

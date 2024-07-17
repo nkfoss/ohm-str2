@@ -34,6 +34,12 @@ export class TagService {
         return of(tag);
     }
 
+    saveAllTags(tags: Tag[]): Observable<Tag[]> {
+        tags.forEach(tag => tag.id = String(tag.name + 123));
+        this.onServer = this.onServer.concat(tags);
+        return of(tags);
+    }
+
     deleteTag(id: string): Observable<boolean> {
         const index = this.onServer.findIndex(
             (tag) => tag.id === id

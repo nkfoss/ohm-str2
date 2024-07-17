@@ -1,0 +1,22 @@
+<div class="main-container">
+    <h1 mat-dialog-title>Add Tag</h1>
+    <div mat-dialog-content>
+        <app-typeahead-chip-list
+            (chipRemoved)="onChipRemoved($event)"
+            (resultSelection)="onTagSelected($event)"
+            (search)="onTagSearch($event)"
+            (typeaheadSubmit)="onTagNameSubmitted($event)"
+            [chipDisplayPropertyPath]="'name'"
+            [chipItems]="$chipListItems()"
+            [searchResults]="tagSearchResults"
+            [typeaheadDisplayFormCtl]="typeaheadDisplayFormControl"
+            [typeaheadDisplayPropertyPath]="'name'"
+        ></app-typeahead-chip-list>
+    </div>
+    <div mat-dialog-actions class="actions-container">
+        <button mat-raised-button (click)="onCancel()">Cancel</button>
+        <button mat-raised-button color="primary" (click)="onSave()">
+            Save
+        </button>
+    </div>
+</div>

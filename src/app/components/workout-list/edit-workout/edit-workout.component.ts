@@ -41,7 +41,7 @@ import {
     ConfirmationDialogData,
 } from '../../dialogs/confirmation-dialog/confirmation-dialog.component';
 import { MatChipsModule } from '@angular/material/chips';
-import { TypeaheadChipListComponent } from '../../typeahead-search/typeahead-chip-list/typeahead-chip-list.component';
+import { TypeaheadChipListComponent } from '../../complex/typeahead-chip-list/typeahead-chip-list.component';
 import { WorkoutStore } from '../../../store/workout.store';
 import { ExerciseStore } from '../../../store/exercise.store';
 import { TagStore } from '../../../store/tag.store';

@@ -8,7 +8,7 @@ import {
     Output,
     ViewChild,
 } from '@angular/core';
-import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatAutocompleteModule, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -20,11 +20,17 @@ import {
     fromEvent,
     takeUntil,
 } from 'rxjs';
+import { getProp } from '../../util/object.util';
+import { JsonPipe } from '@angular/common';
 
+export interface TypeaheadResult {
+    disabled: boolean;
+    result: any;
+}
 @Component({
     selector: 'app-typeahead-search',
     standalone: true,
-    imports: [MatFormFieldModule, MatInputModule, MatAutocompleteModule, ReactiveFormsModule],
+    imports: [MatFormFieldModule, MatInputModule, MatAutocompleteModule, ReactiveFormsModule, JsonPipe],
     templateUrl: './typeahead-search.component.html',
     styleUrl: './typeahead-search.component.scss',
 })
@@ -33,7 +39,7 @@ export class TypeaheadSearchComponent implements AfterViewInit, OnDestroy {
     placeholder: string = 'Type to search...';
 
     @Input()
-    searchResults: any[] = [];
+    searchResults: TypeaheadResult[] = [];
 
     @Input()
     disabled: boolean = false;
@@ -54,6 +60,9 @@ export class TypeaheadSearchComponent implements AfterViewInit, OnDestroy {
     displayFormCtl: FormControl = new FormControl();
 
     @Output()
+    typeaheadSubmit: EventEmitter<string> = new EventEmitter();
+
+    @Output()
     search: EventEmitter<string> = new EventEmitter();
 
     @Output()
@@ -72,6 +81,10 @@ export class TypeaheadSearchComponent implements AfterViewInit, OnDestroy {
     ngOnDestroy(): void {
         this.onDestroy$.next();
         this.onDestroy$.complete();
+    }
+
+    onTypeaheadSubmit() {
+        this.typeaheadSubmit.emit(this.displayFormCtl.value);
     }
 
     ngAfterViewInit(): void {
@@ -112,5 +125,5 @@ export class TypeaheadSearchComponent implements AfterViewInit, OnDestroy {
         this.resultSelection.emit(event);
     }
 
-    getProp = (obj: any, path: string) => path.split('.').reduce((acc, part) => acc && acc[part], obj)
+    getProp = (obj: any, path: string) => getProp(obj, path);
 }

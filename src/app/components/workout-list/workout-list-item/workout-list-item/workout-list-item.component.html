@@ -2,14 +2,14 @@
     <mat-card>
         <mat-card-header>
             <mat-card-title-group>
-                <mat-card-title>{{ workout.name }}</mat-card-title>
+                <mat-card-title>{{ $workout().name }}</mat-card-title>
                 <mat-card-subtitle>{{
-                    workout.description
+                    $workout().description
                 }}</mat-card-subtitle>
                 <span>
                     <mat-card-subtitle class="tag-subtitle"
                         >
-                        {{ tagNames | join: ', ' }}
+                        {{ $tagNames() | join: ', ' }}
                         <mat-icon
                         (click)="onEditTags()"
                             class="tag-icon"

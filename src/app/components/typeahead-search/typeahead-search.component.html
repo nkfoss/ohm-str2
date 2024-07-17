@@ -2,18 +2,33 @@
     <mat-form-field>
         <div>
             <input
-                matInput
-                [placeholder]="placeholder"
-                [matAutocomplete]="auto"
-                [formControl]="displayFormCtl"
                 #searchInput
+                matInput
+                (keyup.enter)="onTypeaheadSubmit()"
+                [formControl]="displayFormCtl"
+                [matAutocomplete]="auto"
+                [placeholder]="placeholder"
             />
         </div>
-        <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onResultSelection($event)">
+        <mat-autocomplete
+            #auto="matAutocomplete"
+            (optionSelected)="onResultSelection($event)"
+        >
             @for (result of searchResults; track result){
-                <mat-option [value]="result" [disabled]="result.disabled">
-                    {{ resultDisplayPropertyPath ? getProp(result, resultDisplayPropertyPath) : result }}
-                </mat-option>
+            <mat-option
+                [disabled]="result.disabled"
+                [value]="
+                    resultValuePropertyPath
+                        ? getProp(result.result, resultValuePropertyPath)
+                        : result.result
+                "
+            >
+                {{
+                    resultDisplayPropertyPath
+                        ? getProp(result.result, resultDisplayPropertyPath)
+                        : result.result
+                }}
+            </mat-option>
             }
         </mat-autocomplete>
     </mat-form-field>

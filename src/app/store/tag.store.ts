@@ -1,16 +1,17 @@
 import { Injectable } from "@angular/core";
-import { Tag, Workout } from "../models/workout.model";
+import { Tag } from "../models/workout.model";
 import { ComponentStore, tapResponse } from "@ngrx/component-store";
-import { WorkoutService } from "../services/workout.service";
 import { Observable, exhaustMap } from "rxjs";
 import { filterNullish } from "../util/filterNullish";
 import { TagService } from "../services/tag.service";
 
 export interface TagState {
     tags: Tag[]
+    updatedTags: Tag[] | undefined;
 }
 const DEFAULT_STATE: TagState = {
-    tags: []
+    tags: [],
+    updatedTags: undefined
 }
 @Injectable({
     providedIn: 'root',
@@ -22,6 +23,20 @@ export class TagStore extends ComponentStore<TagState> {
     }
 
     readonly tags$ = this.select((state) => state.tags)
+    readonly $tags = this.selectSignal((state) => state.tags)
+
+    readonly updatedTags$ = this.select((state) => state.updatedTags)
+
+
+    addTags = this.updater((state, newTags: Tag[]) => ({
+        ...state,
+        tags: [...state.tags, ...newTags]
+    }))
+
+    setUpdatedTags = this.updater((state, updatedTags: Tag[] | undefined) => ({
+        ...state,
+        updatedTags: updatedTags
+    }));
 
     readonly fetchTags = this.effect(trigger$ => {
         return trigger$.pipe(
@@ -46,6 +61,23 @@ export class TagStore extends ComponentStore<TagState> {
                             this.setState(state => {
                                 return {...state, tags: [...state.tags, tag]}
                             })
+                        },
+                        (err) => console.error(err),
+                    )
+                )
+            )
+        )
+    })
+
+    readonly addAllTags = this.effect((tags$: Observable<Tag[] | undefined>) => {
+        return tags$.pipe(
+            filterNullish(),
+            exhaustMap((tags) => 
+                this.tagService.saveAllTags(tags).pipe(
+                    tapResponse(
+                        (newTags) => {
+                            this.addTags(newTags);
+                            this.setUpdatedTags(newTags);
                         },
                         (err) => console.error(err),
                     )

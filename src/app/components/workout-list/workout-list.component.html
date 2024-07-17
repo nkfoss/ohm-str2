@@ -6,7 +6,7 @@
             </button>
             <span class="date-select-inner-container">
                 {{
-                    this.selectedMillis$.value
+                    this.$selectedMillis()
                         | millisToLocalDateString : navDateFormat
                 }}
                 <input
@@ -32,9 +32,9 @@
             </button>
         </span>
     </div>
-    @for (workout of selectedWorkouts$ | async | workoutSort; track $index) {
+    @for (workout of $selectedWorkouts() | workoutSort; track $index) {
     <app-workout-list-item
-        [workout]="workout"
+        [$workout]="workout"
         (editWorkout)="onEditWorkout($event)"
         (deleteWorkout)="onDeleteWorkout($event)"
     ></app-workout-list-item>
@@ -43,4 +43,4 @@
     }
 </div>
 
-<app-typeahead-chip-list [searchResults]="tagSearchResults" [chipItems]="chipList" (search)="onTagSearch($event)" (resultSelection)="onTagSelected($event)"></app-typeahead-chip-list>
+<!-- <app-typeahead-chip-list [searchResults]="tagSearchResults" [chipItems]="chipList" (search)="onTagSearch($event)" (resultSelection)="onTagSelected($event)"></app-typeahead-chip-list> -->

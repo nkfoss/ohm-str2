@@ -1,0 +1,23 @@
+<div class="main-container">
+    <app-typeahead-search
+        (clearForm)="clearForm.emit($event)"
+        (resultSelection)="resultSelection.emit($event)"
+        (search)="search.emit($event)"
+        (typeaheadSubmit)="typeaheadSubmit.emit($event)"
+        [disabled]="disabled"
+        [displayFormCtl]="typeaheadDisplayFormCtl"
+        [minCharsToSearch]="minCharsToSearch"
+        [placeholder]="placeholder"
+        [resultDisplayPropertyPath]="
+            typeaheadDisplayPropertyPath ? typeaheadDisplayPropertyPath : 'item'
+        "
+        [resultValuePropertyPath]="typeaheadValuePropertyPath"
+        [searchResults]="searchResults | typeaheadChipListResult : chipItems"
+        [valueFormCtl]="typeaheadValueFormCtl"
+    ></app-typeahead-search>
+    <app-chip-list
+        [chipItems]="chipItems"
+        [displayValuePropertyPath]="chipDisplayPropertyPath"
+        (chipRemoved)="chipRemoved.emit($event)"
+    ></app-chip-list>
+</div>

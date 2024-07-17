@@ -5,7 +5,6 @@ import { WorkoutService } from "../services/workout.service";
 import { Observable, exhaustMap } from "rxjs";
 import { filterNullish } from "../util/filterNullish";
 import { TagStore } from "./tag.store";
-import { ExerciseStore } from "./exercise.store";
 
 export interface WorkoutState {
     workouts: Workout[]
@@ -25,13 +24,19 @@ export class WorkoutStore extends ComponentStore<WorkoutState> {
     }
 
     private readonly tags$ = this.tagStore.tags$
-    readonly workouts$ = this.select((state) => state.workouts)
+    readonly workouts$ = this.select((state) => state.workouts);
+    readonly $workouts = this.selectSignal((state) => state.workouts);
 
     private readonly setWorkouts = this.updater(
         (state: WorkoutState, workouts: Workout[]) => ({
             ...state, workouts
         })
     )
+
+    updateWorkout = this.updater((state, updated: Workout) => ({
+        ...state,
+        workouts: [...state.workouts.filter(workout => workout.id !== updated?.id), updated]
+    }));
 
     readonly fetchWorkouts = this.effect((timestamp$: Observable<number | undefined>) => {
         return timestamp$.pipe(
@@ -65,23 +70,14 @@ export class WorkoutStore extends ComponentStore<WorkoutState> {
         )
     })
 
-    readonly updateWorkout = this.effect((workout$: Observable<Workout | undefined>) => {
+    readonly saveWorkout = this.effect((workout$: Observable<Workout | undefined>) => {
         return workout$.pipe(
             filterNullish(),
             exhaustMap((workout) => 
                 this.workoutService.saveWorkout(workout).pipe(
                     tapResponse(
                         (updated) => {
-                            this.setState(state => {
-                                return {
-                                    ...state, 
-                                    workouts: state.workouts.map(workout => {
-                                        if (updated.id === workout.id) {
-                                            return updated;
-                                        }
-                                        return workout;
-                                    })}
-                            })
+                            this.updateWorkout(updated);
                         },
                         (err) => console.error(err),
                     )
