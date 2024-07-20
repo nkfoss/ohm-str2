@@ -110,18 +110,8 @@ export class TypeaheadSearchComponent implements AfterViewInit, OnDestroy {
     }
 
     onResultSelection(event: MatAutocompleteSelectedEvent) {
-        if (this.resultValuePropertyPath) {
-            this.valueFormCtl.setValue(this.getProp(event.option.value, this.resultValuePropertyPath));
-        } else {
-            this.valueFormCtl.setValue(event.option.value);
-        }
-        if (this.resultDisplayPropertyPath) {
-            this.displayFormCtl.setValue(
-                event.option.value
-            );
-        } else {
-            this.displayFormCtl.setValue(event.option.value);
-        }
+        this.valueFormCtl.setValue(event.option.value);
+        this.displayFormCtl.setValue(event.option.value);
         this.resultSelection.emit(event);
     }
 
