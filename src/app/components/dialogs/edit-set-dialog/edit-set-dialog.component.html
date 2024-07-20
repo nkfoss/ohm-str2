@@ -1,5 +1,5 @@
 <h1 mat-dialog-title>Edit Set</h1>
-<div mat-dialog-content>
+<div mat-dialog-content class="main-container">
     <mat-form-field>
         <mat-label>Weight</mat-label>
         <input matInput type="number" [(ngModel)]="data.weight">
@@ -9,7 +9,7 @@
         <input matInput type="number" [(ngModel)]="data.reps">
     </mat-form-field>
 </div>
-<div mat-dialog-actions>
-    <button mat-button (click)="onCancel()">Cancel</button>
-    <button mat-button (click)="onSave()">Save</button>
+<div mat-dialog-actions class="actions-container">
+    <button mat-raised-button (click)="onCancel()">Cancel</button>
+    <button mat-raised-button color="primary" (click)="onSave()">Add</button>
 </div>
