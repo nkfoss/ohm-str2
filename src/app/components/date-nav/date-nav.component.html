@@ -1,0 +1,23 @@
+<div class="main-container">
+    <button mat-mini-fab color="secondary" (click)="leftArrowClicked.emit()">
+        <mat-icon>arrow_left</mat-icon>
+    </button>
+    <span class="date-select-inner-container">
+        {{ dateString }}
+        <input
+            matInput
+            hidden
+            [matDatepicker]="picker"
+            (dateChange)="calendarDatePicked.emit($event)"
+        />
+        <mat-datepicker-toggle
+        class="picker-toggle"
+            matIconSuffix
+            [for]="picker"
+        ></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+    </span>
+    <button mat-mini-fab color="secondary" (click)="rightArrowClicked.emit()">
+        <mat-icon>arrow_right</mat-icon>
+    </button>
+</div>

@@ -28,6 +28,7 @@ import { WorkoutStore } from '../../store/workout.store';
 import { TypeaheadChipListComponent } from '../complex/typeahead-chip-list/typeahead-chip-list.component';
 import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { DateNavComponent } from '../date-nav/date-nav.component';
 
 @Pipe({
     name: 'millisToLocalDateString',
@@ -55,6 +56,7 @@ export class WorkoutSortPipe implements PipeTransform {
     selector: 'app-workout-list',
     standalone: true,
     imports: [
+        DateNavComponent,
         WorkoutListItemComponent,
         CommonModule,
         MatIconModule,

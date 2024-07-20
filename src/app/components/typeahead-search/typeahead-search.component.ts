@@ -117,7 +117,7 @@ export class TypeaheadSearchComponent implements AfterViewInit, OnDestroy {
         }
         if (this.resultDisplayPropertyPath) {
             this.displayFormCtl.setValue(
-                this.getProp(event.option.value, this.resultDisplayPropertyPath)
+                event.option.value
             );
         } else {
             this.displayFormCtl.setValue(event.option.value);

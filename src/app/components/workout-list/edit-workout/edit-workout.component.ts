@@ -204,7 +204,7 @@ export class EditWorkoutComponent implements OnInit, OnDestroy {
     }
 
     onSave() {
-        this.workoutStore.addWorkout(this.selectedWorkout);
+        this.workoutStore.saveWorkout(this.selectedWorkout);
         this.hasSaved = true;
     }
 

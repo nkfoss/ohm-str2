@@ -1,0 +1,17 @@
+.main-container {
+    display: flex;
+    align-items: center;
+
+    .date-select-inner-container {
+        display: flex;
+        align-items: center;
+
+        padding-left: 10px;
+
+        .picker-toggle {
+            padding-bottom: 3px;
+        }
+    }
+
+    
+}

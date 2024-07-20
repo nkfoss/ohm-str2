@@ -1,36 +1,11 @@
 <div>
     <div class="workout-list-toolbar">
-        <span>
-            <button mat-mini-fab color="secondary" (click)="changeDate(-1)">
-                <mat-icon>arrow_left</mat-icon>
-            </button>
-            <span class="date-select-inner-container">
-                {{
-                    this.$selectedMillis()
-                        | millisToLocalDateString : navDateFormat
-                }}
-                <input
-                    matInput
-                    hidden
-                    [matDatepicker]="picker"
-                    (dateChange)="onCalendarDatePicked($event)"
-                />
-                <mat-datepicker-toggle
-                    matIconSuffix
-                    [for]="picker"
-                ></mat-datepicker-toggle>
-                <mat-datepicker #picker></mat-datepicker>
-            </span>
-            <button mat-mini-fab color="secondary" (click)="changeDate(1)">
-                <mat-icon>arrow_right</mat-icon>
-            </button>
-        </span>
-        <span class="button-container">
-            <button mat-fab extended color="primary">
-                <mat-icon>add</mat-icon>
-                Add workout
-            </button>
-        </span>
+        <app-date-nav 
+            (calendarDatePicked)="onCalendarDatePicked($event)"
+            (leftArrowClicked)="changeDate(-1)"
+            (rightArrowClicked)="changeDate(1)"
+            [dateString]="$selectedMillis() | millisToLocalDateString : navDateFormat"
+        />
     </div>
     @for (workout of $selectedWorkouts() | workoutSort; track $index) {
     <app-workout-list-item
@@ -41,4 +16,12 @@
     } @empty {
     <p>No workouts for today.</p>
     }
+    <div class="workout-list-footer">
+        <span class="button-container">
+            <button mat-fab extended color="primary">
+                <mat-icon>add</mat-icon>
+                Add workout
+            </button>
+        </span>
+    </div>
 </div>

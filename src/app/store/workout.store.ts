@@ -33,10 +33,16 @@ export class WorkoutStore extends ComponentStore<WorkoutState> {
         })
     )
 
-    updateWorkout = this.updater((state, updated: Workout) => ({
-        ...state,
-        workouts: [...state.workouts.filter(workout => workout.id !== updated?.id), updated]
-    }));
+    updateWorkout = this.updater((state, updated: Workout) => {
+        let updatedList = [...state.workouts];
+        const index = state.workouts.findIndex(existing => existing.id === updated.id)
+        if (index >= 0) {
+            updatedList[index] = updated;
+        } else {
+            updatedList.push(updated);
+        }
+        return {...state, workouts: updatedList}
+    });
 
     readonly fetchWorkouts = this.effect((timestamp$: Observable<number | undefined>) => {
         return timestamp$.pipe(
@@ -62,6 +68,7 @@ export class WorkoutStore extends ComponentStore<WorkoutState> {
                             this.setState(state => {
                                 return {...state, workouts: [...state.workouts, workout]}
                             })
+                            console.log("workouts", this.$workouts())
                         },
                         (err) => console.error(err),
                     )

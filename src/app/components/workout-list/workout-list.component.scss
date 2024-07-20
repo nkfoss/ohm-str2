@@ -22,11 +22,12 @@
     display: flex;
     justify-content: space-between;
 
-    .button-container {
-        display: flex;
-        justify-content: flex-end;
-        margin: 10px 0px;
-    }
+    padding: 5px 0;
+}
+
+.workout-list-footer {
+    display: flex;
+    flex-direction: row-reverse;
 }
 
 
