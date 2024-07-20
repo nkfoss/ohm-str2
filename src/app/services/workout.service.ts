@@ -55,7 +55,7 @@ export class WorkoutService {
             });
     }
 
-    saveWorkout(workout: Workout) {
+    saveWorkout(workout: Partial<Workout>) {
         return this.saveWorkoutToServer(workout);
     }
 
@@ -80,14 +80,16 @@ export class WorkoutService {
         return of(this.filterWorkoutsOnDate(ts, this.onServer));
     }
 
-    private saveWorkoutToServer(workout: Workout): Observable<Workout> {
+    private saveWorkoutToServer(workout: Partial<Workout>): Observable<Workout> {
         const index = this.onServer.findIndex((el) => el.id === workout.id);
         if (index >= 0) {
-            this.onServer[index] = workout;
+            this.onServer[index] = workout as Workout;
         } else {
-            this.onServer.push(workout);
+            workout.id = workout.id = uuidv4();
+            workout.instantMillis = DateTime.now().toMillis();
+            this.onServer.push(workout as Workout);
         }
-        return of(workout);
+        return of(workout as Workout);
     }
 
     private deleteWorkoutOnServer(workoutId: string): Observable<boolean> {

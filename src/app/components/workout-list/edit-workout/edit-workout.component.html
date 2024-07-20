@@ -6,7 +6,7 @@
             Back
         </button>
         <div class="save-button-container">
-            <button mat-fab extended color="primary" (click)="onSave()">
+            <button mat-fab extended color="primary" (click)="onSave()" [disabled]="!workoutDataForm.valid">
                 Save
             </button>
         </div>
@@ -43,7 +43,7 @@
         </div>
     </mat-card>
     <div class="exercise-block-list">
-        @for (exerciseBlock of exerciseBlocks$ | async; track $index) {
+        @for (exerciseBlock of workout.exerciseBlocks; track $index) {
         <app-exercise-block
             [exerciseBlock]="exerciseBlock"
             (deleteBlock)="onDeleteBlock($event)"

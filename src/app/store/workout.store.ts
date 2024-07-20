@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { Injectable, computed } from "@angular/core";
 import { Exercise, Workout } from "../models/workout.model";
 import { ComponentStore, tapResponse } from "@ngrx/component-store";
 import { WorkoutService } from "../services/workout.service";
@@ -8,9 +8,11 @@ import { TagStore } from "./tag.store";
 
 export interface WorkoutState {
     workouts: Workout[]
+    selectedWorkoutId: string | undefined;
 }
 const DEFAULT_STATE: WorkoutState = {
-    workouts: []
+    workouts: [],
+    selectedWorkoutId: undefined
 }
 @Injectable({
     providedIn: 'root',
@@ -19,13 +21,16 @@ export class WorkoutStore extends ComponentStore<WorkoutState> {
 
     exercises: Exercise[] = [];
 
-    constructor(private workoutService: WorkoutService, private tagStore: TagStore) {
+    constructor(private workoutService: WorkoutService) {
         super(DEFAULT_STATE);
     }
 
-    private readonly tags$ = this.tagStore.tags$
     readonly workouts$ = this.select((state) => state.workouts);
     readonly $workouts = this.selectSignal((state) => state.workouts);
+    readonly $selectedWorkoutId = this.selectSignal((state) => state.selectedWorkoutId);
+    readonly $selectedWorkout = computed(() => {
+        return this.$workouts().find(workout => workout.id === this.$selectedWorkoutId())
+    })
 
     private readonly setWorkouts = this.updater(
         (state: WorkoutState, workouts: Workout[]) => ({
@@ -43,6 +48,12 @@ export class WorkoutStore extends ComponentStore<WorkoutState> {
         }
         return {...state, workouts: updatedList}
     });
+
+    selectWorkout(id: string | undefined) {
+        this.patchState({
+            selectedWorkoutId: id
+        })
+    }
 
     readonly fetchWorkouts = this.effect((timestamp$: Observable<number | undefined>) => {
         return timestamp$.pipe(
@@ -77,7 +88,7 @@ export class WorkoutStore extends ComponentStore<WorkoutState> {
         )
     })
 
-    readonly saveWorkout = this.effect((workout$: Observable<Workout | undefined>) => {
+    readonly saveWorkout = this.effect((workout$: Observable<Partial<Workout> | undefined>) => {
         return workout$.pipe(
             filterNullish(),
             exhaustMap((workout) => 

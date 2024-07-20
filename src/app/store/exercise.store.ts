@@ -26,6 +26,7 @@ export class ExerciseStore extends ComponentStore<ExerciseState> {
     }
 
     readonly exercises$ = this.select((state) => state.exercises);
+    readonly $exercises = this.selectSignal(state => state.exercises);
     readonly newExercise$ = this.select((state) => state.newExercise);
 
     readonly fetchExercises = this.effect(trigger$ => {
