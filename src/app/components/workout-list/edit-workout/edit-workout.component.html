@@ -18,9 +18,11 @@
                     <mat-label>Name</mat-label>
                     <input
                         matInput
-                        [(ngModel)]="selectedWorkout.name"
                         [formControl]="workoutDataForm.controls.name"
                     />
+                    @if (workoutDataForm.controls.name.errors) {
+                        <mat-error>Value is required</mat-error>
+                    }
                 </mat-form-field>
                 <mat-form-field class="notes-form-field">
                     <mat-label>Notes</mat-label>
@@ -28,7 +30,6 @@
                         matInput
                         rows="4.5"
                         style="resize: none"
-                        [(ngModel)]="selectedWorkout.notes"
                         [formControl]="workoutDataForm.controls.notes"
                     ></textarea>
                 </mat-form-field>

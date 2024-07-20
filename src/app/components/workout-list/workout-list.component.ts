@@ -119,10 +119,10 @@ export class WorkoutListComponent implements OnInit {
         })
     }
 
-    onEditWorkout(workoutId: string) {
+    onEditWorkout(workoutId?: string) {
         this.router.navigate(['edit'], {
             relativeTo: this.route,
-            queryParams: { id: workoutId },
+            queryParams: workoutId ? { id: workoutId } : {},
         });
     }
 

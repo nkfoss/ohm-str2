@@ -35,6 +35,7 @@ import {
     FormGroup,
     FormsModule,
     ReactiveFormsModule,
+    Validators,
 } from '@angular/forms';
 import {
     ConfirmationDialogComponent,
@@ -45,16 +46,19 @@ import { TypeaheadChipListComponent } from '../../complex/typeahead-chip-list/ty
 import { WorkoutStore } from '../../../store/workout.store';
 import { ExerciseStore } from '../../../store/exercise.store';
 import { TagStore } from '../../../store/tag.store';
+import { noEmptyStringValidator } from '../../validators/empty-string.validator';
 
 export class WorkoutDataForm {
-    name = new FormControl<string>('');
+    name = new FormControl<string>('', { validators: noEmptyStringValidator() });
     description = new FormControl<string>('');
     notes = new FormControl<string>('');
 
-    constructor(name?: string, description?: string, notes?: string) {
-        this.name.setValue(name ?? '');
-        this.description.setValue(description ?? '');
-        this.notes.setValue(notes ?? '');
+    constructor(workout?: Workout) {
+        if (workout) {
+            this.name.setValue(workout.name ?? '');
+            this.description.setValue(workout.description ?? '');
+            this.notes.setValue(workout.notes ?? '');
+        }
     }
 }
 
@@ -126,6 +130,7 @@ export class EditWorkoutComponent implements OnInit, OnDestroy {
             )
             .subscribe((workout) => {
                 if (workout) {
+                    this.workoutDataForm = new FormGroup(new WorkoutDataForm(workout))
                     this.selectedWorkout = JSON.parse(JSON.stringify(workout));
                     this.exerciseBlocks$.next(
                         this.selectedWorkout.exerciseBlocks
