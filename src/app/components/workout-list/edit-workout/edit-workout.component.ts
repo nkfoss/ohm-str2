@@ -223,20 +223,9 @@ export class EditWorkoutComponent implements OnInit, OnDestroy {
     }
 
     onNavigateBack() {
-        if (this.changes) {
-            const dialogRef = this.dialog.open<
-                ConfirmationDialogComponent,
-                ConfirmationDialogData
-            >(ConfirmationDialogComponent, {
-                data: { message: 'Discard unsaved changes?' },
-            });
-            dialogRef.afterClosed().subscribe((confirmed) => {
-                if (confirmed) {
-                    this.location.back();
-                }
-            });
-        } else {
-            this.location.back();
-        }
+        const { id, ...params } = this.$params() as any;
+        this.router.navigate(['workouts'], {
+            queryParams: params,
+        });
     }
 }
