@@ -13,12 +13,13 @@ interface WorkoutsOnServer {
     providedIn: 'root',
 })
 export class WorkoutService {
-    readonly url = baseUrl + 'workouts.json';
+    readonly url = baseUrl + 'workouts';
+    readonly SUFFIX = '.json'
 
     constructor(private http: HttpClient) {}
 
     fetchWorkouts() {
-        return this.http.get<WorkoutsOnServer>(this.url).pipe(
+        return this.http.get<WorkoutsOnServer>(this.url + this.SUFFIX).pipe(
             map((res) => {
                 let workouts: Workout[] = [];
                 for (const workoutId in res) {
@@ -37,7 +38,7 @@ export class WorkoutService {
         workouts.forEach(({ id, ...rest }) => {
             toServer[id ?? uuidv4()] = rest;
         });
-        return this.http.patch<WorkoutsOnServer>(this.url, toServer).pipe(
+        return this.http.patch<WorkoutsOnServer>(this.url + this.SUFFIX, toServer).pipe(
             map((res) => {
                 let workouts: Workout[] = [];
                 for (const tagId in res) {
@@ -49,6 +50,10 @@ export class WorkoutService {
     }
 
     deleteWorkout(workoutId: string) {
-        return of(false);
+        return this.http.delete<WorkoutsOnServer>(this.url + `/${workoutId}` + this.SUFFIX).pipe(
+            map((res) => {
+                console.log(res)
+            })
+        );
     }
 }
