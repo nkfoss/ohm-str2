@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, computed } from '@angular/core';
 import {
     Exercise,
     ExerciseBlock,
@@ -46,6 +46,8 @@ import { WorkoutStore } from '../../../store/workout.store';
 import { ExerciseStore } from '../../../store/exercise.store';
 import { TagStore } from '../../../store/tag.store';
 import { noEmptyStringValidator } from '../../validators/empty-string.validator';
+import { DateTime } from 'luxon';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 export class WorkoutDataForm {
     name = new FormControl<string>('', { validators: noEmptyStringValidator(), nonNullable: true });
@@ -95,6 +97,18 @@ export class EditWorkoutComponent implements OnInit, OnDestroy {
         new WorkoutDataForm()
     );
     tagNames: string[] = [];
+    $params = toSignal(this.route.queryParams);
+    $selectedMillis = computed(() => {
+        const params = this.$params();
+        if (params && params['day'] && params['month'] && params['year']) {
+            return DateTime.fromFormat(
+                params['day'] + params['month'] + params['year'],
+                'dMyyyy'
+            ).toMillis();
+        } else {
+            return undefined;
+        }
+    })
 
     readonly changes: boolean = false;
     hasSaved: boolean = false;
@@ -188,9 +202,11 @@ export class EditWorkoutComponent implements OnInit, OnDestroy {
     }
 
     onSave() {
+        console.log("seected millis", this.$selectedMillis())
         this.workout = {
             ...this.workout,
-            ...this.workoutDataForm.getRawValue()
+            ...this.workoutDataForm.getRawValue(),
+            instantMillis: this.$selectedMillis()
         }
         this.workoutStore.saveWorkout(this.workout);
     }

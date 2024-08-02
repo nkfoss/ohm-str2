@@ -1,0 +1,23 @@
+.main-container {
+
+    display: flex;
+    justify-content: space-around;
+
+    .login-form-container {
+
+        min-width: 300px;
+        margin-top: 10px;
+        display: flex;
+        flex-direction: column;
+        
+        .button-container {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-around;
+        }
+
+        .error-container {
+            margin: 10px
+        }
+    }
+}

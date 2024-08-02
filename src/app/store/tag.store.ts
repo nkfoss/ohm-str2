@@ -51,24 +51,6 @@ export class TagStore extends ComponentStore<TagState> {
         )
     })
 
-    readonly addTag = this.effect((tag$: Observable<Tag | undefined>) => {
-        return tag$.pipe(
-            filterNullish(),
-            exhaustMap((tag) => 
-                this.tagService.saveTag(tag).pipe(
-                    tapResponse(
-                        (tag) => {
-                            this.setState(state => {
-                                return {...state, tags: [...state.tags, tag]}
-                            })
-                        },
-                        (err) => console.error(err),
-                    )
-                )
-            )
-        )
-    })
-
     readonly addAllTags = this.effect((tags$: Observable<Tag[] | undefined>) => {
         return tags$.pipe(
             filterNullish(),
@@ -78,31 +60,6 @@ export class TagStore extends ComponentStore<TagState> {
                         (newTags) => {
                             this.addTags(newTags);
                             this.setUpdatedTags(newTags);
-                        },
-                        (err) => console.error(err),
-                    )
-                )
-            )
-        )
-    })
-
-    readonly updateTag = this.effect((tag$: Observable<Tag | undefined>) => {
-        return tag$.pipe(
-            filterNullish(),
-            exhaustMap((tag) => 
-                this.tagService.saveTag(tag).pipe(
-                    tapResponse(
-                        (updated) => {
-                            this.setState(state => {
-                                return {
-                                    ...state, 
-                                    tags: state.tags.map(tag => {
-                                        if (updated.id === tag.id) {
-                                            return updated;
-                                        }
-                                        return tag;
-                                    })}
-                            })
                         },
                         (err) => console.error(err),
                     )

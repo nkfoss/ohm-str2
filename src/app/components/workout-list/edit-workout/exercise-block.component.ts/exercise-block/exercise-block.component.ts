@@ -67,7 +67,7 @@ export class ExerciseBlockComponent implements OnChanges {
                     )?.name;
                     this.exerciseName = name ?? 'unknown';
                 });
-            this.dataSource = this.exerciseBlock.sets;
+            this.dataSource = this.exerciseBlock.sets ?? [];
         }
     }
 

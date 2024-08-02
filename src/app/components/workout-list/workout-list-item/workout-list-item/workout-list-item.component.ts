@@ -97,7 +97,8 @@ export class WorkoutListItemComponent implements  OnChanges, OnDestroy {
         this.exerciseStore.exercises$
             .pipe(takeUntil(this.onDestroy$))
             .subscribe((exercises) => {
-                this.dataSource = this.$workout().exerciseBlocks.map(
+                const exerciseBlocks = this.$workout().exerciseBlocks ?? [];
+                this.dataSource = exerciseBlocks.map(
                     (exerciseBlock) =>
                         this.createExerciseBlockTableData(
                             exerciseBlock,
@@ -119,10 +120,10 @@ export class WorkoutListItemComponent implements  OnChanges, OnDestroy {
         exercises: Exercise[]
     ): ExerciseBlockTableData {
         let setSummary = '';
-        if (exerciseBlock.sets.length === 1) {
+        if (exerciseBlock.sets?.length === 1) {
             setSummary = '1 set performed';
-        } else if (exerciseBlock.sets.length > 1) {
-            setSummary = exerciseBlock.sets.length + ' sets performed';
+        } else if ((exerciseBlock.sets?.length ?? 0) !== 1) {
+            setSummary = (exerciseBlock.sets?.length ?? 0) + ' sets performed';
         }
         const exerciseName = exercises.find(
             (ex) => ex.id === exerciseBlock.exerciseId

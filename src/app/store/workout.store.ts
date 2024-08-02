@@ -55,32 +55,12 @@ export class WorkoutStore extends ComponentStore<WorkoutState> {
         })
     }
 
-    readonly fetchWorkouts = this.effect((timestamp$: Observable<number | undefined>) => {
-        return timestamp$.pipe(
-            filterNullish(),
-            exhaustMap((timestamp: number) => 
-                this.workoutService.fetchWorkouts(timestamp).pipe(
+    readonly fetchWorkouts = this.effect((trigger$: Observable<void>) => {
+        return trigger$.pipe(
+            exhaustMap(() => 
+                this.workoutService.fetchWorkouts().pipe(
                     tapResponse(
                         (workouts) => this.setWorkouts(workouts),
-                        (err) => console.error(err),
-                    )
-                )
-            )
-        )
-    })
-
-    readonly addWorkout = this.effect((workout$: Observable<Workout | undefined>) => {
-        return workout$.pipe(
-            filterNullish(),
-            exhaustMap((workout) => 
-                this.workoutService.saveWorkout(workout).pipe(
-                    tapResponse(
-                        (workout) => {
-                            this.setState(state => {
-                                return {...state, workouts: [...state.workouts, workout]}
-                            })
-                            console.log("workouts", this.$workouts())
-                        },
                         (err) => console.error(err),
                     )
                 )
@@ -92,10 +72,13 @@ export class WorkoutStore extends ComponentStore<WorkoutState> {
         return workout$.pipe(
             filterNullish(),
             exhaustMap((workout) => 
-                this.workoutService.saveWorkout(workout).pipe(
+                this.workoutService.saveAllWorkouts([workout as Workout]).pipe(
                     tapResponse(
-                        (updated) => {
-                            this.updateWorkout(updated);
+                        (res) => {
+                            const updated = res.at(0);
+                            if (updated) {
+                                this.updateWorkout(updated);
+                            }
                         },
                         (err) => console.error(err),
                     )

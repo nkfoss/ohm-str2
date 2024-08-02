@@ -1,0 +1,44 @@
+<div class="main-container">
+    <div class="login-form-container">
+        <mat-form-field>
+            <mat-label>Username</mat-label>
+            <input matInput [formControl]="usernameFormControl" />
+            @if (usernameFormControl.hasError('required')) {
+            <mat-error>Username is required</mat-error>
+            } @else if (usernameFormControl.hasError('email')) {
+            <mat-error>Valid email required</mat-error>
+            }
+        </mat-form-field>
+        <mat-form-field>
+            <mat-label>Password</mat-label>
+            <input matInput [formControl]="passwordFormControl" type="password"/>
+            @if (passwordFormControl.hasError('required')) {
+            <mat-error>Password is required</mat-error>
+            } @else if (passwordFormControl.hasError('minlength')) {
+            <mat-error>Min length is 6 chars</mat-error>
+            }
+        </mat-form-field>
+        <div class="button-container">
+            <button
+                mat-raised-button
+                color="primary"
+                (click)="submit()"
+                [disabled]="
+                    !usernameFormControl.valid || !passwordFormControl.valid
+                "
+                style="width: 90px;"
+            >
+                {{ mode }}
+            </button>
+            |
+            <button mat-raised-button color='secondary' (click)="toggleMode()" style="width: 160px">
+                {{ mode === "Login" ? "Switch to signup" : "Switch to login" }}
+            </button>
+        </div>
+        <div class="error-container">
+            @if (errorMsg) {
+                <mat-error>{{ errorMsg }}</mat-error>
+            }
+        </div>
+    </div>
+</div>

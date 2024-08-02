@@ -5,7 +5,7 @@ import {
     PipeTransform,
     computed,
 } from '@angular/core';
-import { ActivatedRoute, Params, Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { DateTime, DateTimeFormatOptions } from 'luxon';
 import { Workout } from '../../models/workout.model';
 import { CommonModule } from '@angular/common';
@@ -35,8 +35,17 @@ import { DateNavComponent } from '../date-nav/date-nav.component';
     standalone: true,
 })
 export class MillisToLocalDateStringPipe implements PipeTransform {
-    transform(millis: number, formatOptions: DateTimeFormatOptions): string {
-        return DateTime.fromMillis(millis).toLocaleString(formatOptions);
+    transform(millis?: number): string {
+        if (millis === undefined) {
+            return '';
+        }
+        const navDateFormat: DateTimeFormatOptions = {
+            weekday: 'short',
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric',
+        };
+        return DateTime.fromMillis(millis).toLocaleString(navDateFormat);
     }
 }
 @Pipe({
@@ -73,37 +82,34 @@ export class WorkoutSortPipe implements PipeTransform {
     styleUrl: './workout-list.component.scss',
 })
 export class WorkoutListComponent implements OnInit {
-    protected readonly navDateFormat: DateTimeFormatOptions = {
-        weekday: 'short',
-        month: 'short',
-        day: 'numeric',
-        year: 'numeric',
-    };
-
-    $selectedWorkouts = computed(() => {
-        const workouts = this.workoutStore.$workouts().filter((workout) => {
-            return (
-                DateTime.fromMillis(workout.instantMillis)
-                    .startOf('day')
-                    .toMillis() ==
-                DateTime.fromMillis(this.$selectedMillis())
-                    .startOf('day')
-                    .toMillis()
-            );
-        });
-        return workouts;
-    });
     $params = toSignal(this.route.queryParams);
-    $selectedMillis = computed<number>(() => {
+    $selectedMillis = computed(() => {
         const params = this.$params();
-        let selectedMillis = 0;
         if (params && params['day'] && params['month'] && params['year']) {
-            selectedMillis = DateTime.fromFormat(
+            return DateTime.fromFormat(
                 params['day'] + params['month'] + params['year'],
                 'dMyyyy'
             ).toMillis();
+        } else {
+            return undefined;
         }
-        return selectedMillis;
+    });
+    $selectedWorkouts = computed(() => {
+        const selectedMillis = this.$selectedMillis();
+        if (selectedMillis) {
+            return this.workoutStore.$workouts().filter((workout) => {
+                return (
+                    DateTime.fromMillis(workout.instantMillis)
+                        .startOf('day')
+                        .toMillis() ==
+                    DateTime.fromMillis(selectedMillis)
+                        .startOf('day')
+                        .toMillis()
+                );
+            });
+        } else {
+            return [];
+        }
     });
 
     constructor(
@@ -115,14 +121,14 @@ export class WorkoutListComponent implements OnInit {
 
     ngOnInit(): void {
         this.route.queryParams.subscribe(_ => {
-            this.workoutStore.fetchWorkouts(this.$selectedMillis());
+            this.workoutStore.fetchWorkouts();
         })
     }
 
     onEditWorkout(workoutId?: string) {
         this.router.navigate(['edit'], {
             relativeTo: this.route,
-            queryParams: workoutId ? { id: workoutId } : {},
+            queryParams: { id: workoutId, ...this.$params() },
         });
     }
 
@@ -146,22 +152,24 @@ export class WorkoutListComponent implements OnInit {
     changeDate(delta: number) {
         const params = this.$params();
         if (params) {
+            let dt = DateTime.fromFormat(
+                params['day'] + params['month'] + params['year'],
+                'dMyyyy'
+            );
+            dt = dt.plus({ days: delta})
             this.router.navigate(this.route.snapshot.url, {
-                queryParams: { ...params, day: Number(params['day']) + delta },
+                queryParams: { day: dt.day, month: dt.month, year: dt.year  },
             });
         }
     }
 
     onCalendarDatePicked(event: MatDatepickerInputEvent<DateTime>) {
         if (event.value) {
-            console.log('val', event.value)
+            const dt = event.value
+            this.router.navigate(this.route.snapshot.url, {
+                queryParams: { day: dt.day, month: dt.month, year: dt.year  },
+            });
         }
-    }
-
-    tagSearchResults: string[] = [];
-    onTagSearch(tagName: string) {
-        const tags = ['alpha', 'bravo', 'charlie'];
-        this.tagSearchResults = tags.filter((tag) => tag.includes(tagName));
     }
 
     chipList: string[] = [];

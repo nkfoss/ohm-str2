@@ -4,7 +4,7 @@
             (calendarDatePicked)="onCalendarDatePicked($event)"
             (leftArrowClicked)="changeDate(-1)"
             (rightArrowClicked)="changeDate(1)"
-            [dateString]="$selectedMillis() | millisToLocalDateString : navDateFormat"
+            [dateString]="$selectedMillis() | millisToLocalDateString"
         />
     </div>
     @for (workout of $selectedWorkouts() | workoutSort; track $index) {

@@ -1,0 +1,1 @@
+export const baseUrl = 'https://ohm-str2-default-rtdb.firebaseio.com/'

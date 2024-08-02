@@ -4,13 +4,14 @@
         <span class="name">Ohm-strength</span>
     </div>
     <span class="spacer"></span>
-    <button mat-icon-button class="menu-button" [matMenuTriggerFor]="menu" aria-label="Navigation menu">
-        <mat-icon>menu</mat-icon>
-    </button>
-    <mat-menu #menu="matMenu">
-        <button mat-menu-item>
-            <span>Sign out</span>
+    @if (authenticated) {
+        <button mat-icon-button class="menu-button" [matMenuTriggerFor]="menu" aria-label="Navigation menu">
+            <mat-icon>menu</mat-icon>
         </button>
-    </mat-menu>
-
+        <mat-menu #menu="matMenu">
+            <button mat-menu-item>
+                <span (click)="logout()">Sign out</span>
+            </button>
+        </mat-menu>
+    }
 </mat-toolbar>

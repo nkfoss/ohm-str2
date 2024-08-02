@@ -1,95 +1,64 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, Subject, of } from 'rxjs';
+import { Subject, map, of } from 'rxjs';
 import { Exercise } from '../models/workout.model';
 import { v4 as uuidv4 } from 'uuid';
+import { baseUrl } from '../constants/app.constants';
 
+interface ExercisesResponse {
+    [key: string]: Omit<Exercise, 'id'>
+}
 @Injectable({
     providedIn: 'root',
 })
 export class ExerciseService {
+    readonly url = baseUrl + 'exercises.json';
+
     constructor(private http: HttpClient) {}
 
-    private cachedExercises$ = new BehaviorSubject<Exercise[]>([]);
-    public cachedExercises: Exercise[] = [];
     private createdExercise$ = new Subject<Exercise>();
 
-    getCreatedExercise(): Observable<Exercise> {
-        return this.createdExercise$;
-    }
-
-    getCachedExercises(): Observable<Exercise[]> {
-        return this.cachedExercises$;
-    }
-
     fetchExercises() {
-        return this.fetchExercisesFromServer();
-    }
-
-    private fetchExercisesFromServer() {
-        return of(this.exercisesOnServer.slice());
+        return this.http.get<ExercisesResponse>(this.url).pipe(
+            map(res => {
+                let exercises: Exercise[] = [];
+                for (const exerciseId in res) {
+                    exercises.push({id: exerciseId, ...res[exerciseId]})
+                }
+                return exercises;
+            })
+        );
     }
 
     createNewExercise(exercise: Exercise) {
-        this.saveExerciseToServer(exercise).subscribe(ex => {
+        this.saveExercise(exercise).subscribe(ex => {
             this.createdExercise$.next(ex);
-            this.saveExerciseToCache(ex);
         })
     }
 
-    saveExercise(toSave: Exercise) {
-        return this.saveExerciseToServer(toSave);
-    }
-
-    private saveExerciseToCache(toSave: Exercise) {
-        const i = this.cachedExercises.findIndex((ex) => ex.id === toSave.id);
-        if (i >= 0) {
-            this.cachedExercises.splice(i, 1);
-        } else {
-            this.cachedExercises.push(toSave);
+    saveExercise(exercise: Exercise) {
+        const toServer: any = {};
+        const id = exercise.id ?? uuidv4();
+        toServer[id] = {
+            ...exercise,
+            id: undefined,
         }
-        this.cachedExercises$.next(this.cachedExercises.slice());
-    }
-
-    private saveExerciseToServer(toSave: Exercise) {
-        const i = this.exercisesOnServer.findIndex((ex) => (ex.id === toSave.id));
-        if (i >= 0) {
-            this.exercisesOnServer[i] = toSave;
-        } else {
-            toSave.id = uuidv4();
-            this.exercisesOnServer.push(toSave);
-        }
-        return of({...toSave});
+        return this.http.patch<ExercisesResponse>(this.url, toServer).pipe(
+            map(res => {
+                let workout: Partial<Exercise> = {};
+                for (const id in res) {
+                    workout = {
+                        id: id,
+                        ...res[id]
+                    }
+                }
+                return workout as Exercise;
+            })
+        )
     }
 
     deleteExercise(id: string) {
-        return this.deleteExerciseFromServer(id);
+        return of(false);
     }
 
-    private deleteExerciseFromServer(id: string) {
-        const i = this.exercisesOnServer.findIndex((ex) => ex.id === id);
-        if (i >= 0) {
-            this.exercisesOnServer.splice(i, 1);
-            return of(true);
-        } else {
-            return of(false);
-        }
-    }
-
-    private exercisesOnServer: Exercise[] = [
-        {
-            name: 'Bench Press',
-            id: 'Bench Press',
-        },
-        {
-            name: 'Push Press',
-            id: 'Push Press',
-
-        },
-        {
-            name: 'Tricep Pushdown',
-            id: 'Tricep Pushdown',
-
-        },
-    ];
 }
