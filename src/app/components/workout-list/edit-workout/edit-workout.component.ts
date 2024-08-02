@@ -1,23 +1,10 @@
 import { Component, OnDestroy, OnInit, computed } from '@angular/core';
-import {
-    Exercise,
-    ExerciseBlock,
-    Workout,
-} from '../../../models/workout.model';
-import { ActivatedRoute } from '@angular/router';
+import { ExerciseBlock, Workout } from '../../../models/workout.model';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ExerciseBlockComponent } from './exercise-block.component.ts/exercise-block/exercise-block.component';
 import { AsyncPipe, CommonModule, Location } from '@angular/common';
 import { WorkoutForm } from '../../../models/forms/workout-form.model';
-import {
-    BehaviorSubject,
-    Observable,
-    Subject,
-    Subscription,
-    filter,
-    map,
-    skip,
-    takeUntil,
-} from 'rxjs';
+import { BehaviorSubject, Observable, Subject, filter, skip, take } from 'rxjs';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
@@ -50,9 +37,12 @@ import { DateTime } from 'luxon';
 import { toSignal } from '@angular/core/rxjs-interop';
 
 export class WorkoutDataForm {
-    name = new FormControl<string>('', { validators: noEmptyStringValidator(), nonNullable: true });
+    name = new FormControl<string>('', {
+        validators: noEmptyStringValidator(),
+        nonNullable: true,
+    });
     description = new FormControl<string>('', { nonNullable: true });
-    notes = new FormControl<string>('', {  nonNullable: true });
+    notes = new FormControl<string>('', { nonNullable: true });
 
     constructor(workout?: Partial<Workout>) {
         if (workout) {
@@ -84,10 +74,8 @@ export class WorkoutDataForm {
     styleUrl: './edit-workout.component.scss',
 })
 export class EditWorkoutComponent implements OnInit, OnDestroy {
-    selectedWorkoutId: string = '';
-    selectedWorkoutSub!: Subscription;
-    workout: Partial<Workout>  = {
-        exerciseBlocks: []
+    workout: Partial<Workout> = {
+        exerciseBlocks: [],
     };
     onDestroy$: Subject<void> = new Subject();
     exerciseBlocks$ = new BehaviorSubject<ExerciseBlock[]>([]);
@@ -108,7 +96,7 @@ export class EditWorkoutComponent implements OnInit, OnDestroy {
         } else {
             return undefined;
         }
-    })
+    });
 
     readonly changes: boolean = false;
     hasSaved: boolean = false;
@@ -119,7 +107,8 @@ export class EditWorkoutComponent implements OnInit, OnDestroy {
         private tagStore: TagStore,
         private route: ActivatedRoute,
         private location: Location,
-        private dialog: MatDialog
+        private dialog: MatDialog,
+        private router: Router
     ) {}
 
     ngOnDestroy(): void {
@@ -128,14 +117,18 @@ export class EditWorkoutComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit(): void {
-        const selectedWorkoutId = this.route.snapshot.queryParamMap.get('id') ?? undefined;
+        const selectedWorkoutId =
+            this.route.snapshot.queryParamMap.get('id') ?? undefined;
         this.workoutStore.selectWorkout(selectedWorkoutId);
         this.tagStore.fetchTags();
         const selectedWorkout = this.workoutStore.$selectedWorkout();
         if (selectedWorkout) {
             this.workout = selectedWorkout;
-            this.workoutDataForm = new FormGroup(new WorkoutDataForm(this.workout));
+            this.workoutDataForm = new FormGroup(
+                new WorkoutDataForm(this.workout)
+            );
         }
+        console.log('id', this.workoutStore.$selectedWorkoutId());
     }
 
     onAddBlock() {
@@ -198,23 +191,36 @@ export class EditWorkoutComponent implements OnInit, OnDestroy {
             exerciseId: exerciseId,
             sets: [],
         };
-        this.workout.exerciseBlocks = [...this.workout.exerciseBlocks ?? [], newBlock]
+        this.workout.exerciseBlocks = [
+            ...(this.workout.exerciseBlocks ?? []),
+            newBlock,
+        ];
     }
 
     onSave() {
-        console.log("seected millis", this.$selectedMillis())
         this.workout = {
             ...this.workout,
             ...this.workoutDataForm.getRawValue(),
-            instantMillis: this.$selectedMillis()
+            instantMillis: this.$selectedMillis(),
+        };
+        if (!this.workout.id) {
+            this.workoutStore.selectedWorkoutId$
+                .pipe(filterNullish(), take(1))
+                .subscribe((id) => {
+                    this.router.navigate([], {
+                        relativeTo: this.route,
+                        queryParams: { id: id, ...this.$params() },
+                    });
+                });
         }
         this.workoutStore.saveWorkout(this.workout);
     }
 
     onDeleteBlock(id: string) {
-        const index = this.workout.exerciseBlocks?.findIndex(
-            (block) => block.id === id
-        ) ?? -1;
+        const index =
+            this.workout.exerciseBlocks?.findIndex(
+                (block) => block.id === id
+            ) ?? -1;
         if (index >= 0) {
             const copy = this.workout.exerciseBlocks?.slice();
             copy?.splice(index, 1);

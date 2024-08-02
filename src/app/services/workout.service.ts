@@ -50,10 +50,6 @@ export class WorkoutService {
     }
 
     deleteWorkout(workoutId: string) {
-        return this.http.delete<WorkoutsOnServer>(this.url + `/${workoutId}` + this.SUFFIX).pipe(
-            map((res) => {
-                console.log(res)
-            })
-        );
+        return this.http.delete<WorkoutsOnServer>(this.url + `/${workoutId}` + this.SUFFIX);
     }
 }

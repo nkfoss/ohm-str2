@@ -4,7 +4,6 @@ import { ComponentStore, tapResponse } from "@ngrx/component-store";
 import { WorkoutService } from "../services/workout.service";
 import { Observable, exhaustMap } from "rxjs";
 import { filterNullish } from "../util/filterNullish";
-import { TagStore } from "./tag.store";
 
 export interface WorkoutState {
     workouts: Workout[]
@@ -27,6 +26,7 @@ export class WorkoutStore extends ComponentStore<WorkoutState> {
 
     readonly workouts$ = this.select((state) => state.workouts);
     readonly $workouts = this.selectSignal((state) => state.workouts);
+    readonly selectedWorkoutId$ = this.select((state) => state.selectedWorkoutId);
     readonly $selectedWorkoutId = this.selectSignal((state) => state.selectedWorkoutId);
     readonly $selectedWorkout = computed(() => {
         return this.$workouts().find(workout => workout.id === this.$selectedWorkoutId())
@@ -35,6 +35,12 @@ export class WorkoutStore extends ComponentStore<WorkoutState> {
     private readonly setWorkouts = this.updater(
         (state: WorkoutState, workouts: Workout[]) => ({
             ...state, workouts
+        })
+    )
+
+    private readonly setSelectedWorkoutId = this.updater(
+        (state: WorkoutState, id: string) => ({
+            ...state, selectedWorkoutId: id
         })
     )
 
@@ -75,9 +81,12 @@ export class WorkoutStore extends ComponentStore<WorkoutState> {
                 this.workoutService.saveAllWorkouts([workout as Workout]).pipe(
                     tapResponse(
                         (res) => {
-                            const updated = res.at(0);
-                            if (updated) {
-                                this.updateWorkout(updated);
+                            const saved = res.at(0);
+                            if (saved) {
+                                if (!workout.id) {
+                                    this.setSelectedWorkoutId(saved.id);
+                                }
+                                this.updateWorkout(saved);
                             }
                         },
                         (err) => console.error(err),
@@ -93,7 +102,7 @@ export class WorkoutStore extends ComponentStore<WorkoutState> {
             exhaustMap((id) => 
                 this.workoutService.deleteWorkout(id).pipe(
                     tapResponse(
-                        (res) => {
+                        () => {
                             this.setState(state => {
                                 return {
                                     ...state, 
@@ -107,5 +116,4 @@ export class WorkoutStore extends ComponentStore<WorkoutState> {
             )
         )
     })
-
 }
