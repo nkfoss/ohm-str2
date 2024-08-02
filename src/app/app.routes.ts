@@ -12,12 +12,11 @@ export const routes: Routes = [
         path: 'workouts',
         component: WorkoutListComponent,
         canActivate: [AuthGuard],
-        children: [
-            {
-                path: 'edit',
-                component: EditWorkoutComponent
-            },
-        ]   
+    },
+    {
+        path: 'workouts/edit',
+        component: EditWorkoutComponent,
+        canActivate: [AuthGuard],
     },
     { path: '**', redirectTo: 'home' }
 
