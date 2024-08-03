@@ -8,11 +8,13 @@ import { MatInputModule } from '@angular/material/input';
 
 import { DateTime } from 'luxon';
 import { Router } from '@angular/router';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
     selector: 'app-home',
     standalone: true,
     imports: [
+        MatButtonModule,
         MatDatepickerModule,
         MatFormFieldModule,
         MatLuxonDateModule,
