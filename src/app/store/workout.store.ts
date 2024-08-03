@@ -2,16 +2,18 @@ import { Injectable, computed } from "@angular/core";
 import { Exercise, Workout } from "../models/workout.model";
 import { ComponentStore, tapResponse } from "@ngrx/component-store";
 import { WorkoutService } from "../services/workout.service";
-import { Observable, exhaustMap } from "rxjs";
+import { Observable, exhaustMap, finalize, switchMap } from "rxjs";
 import { filterNullish } from "../util/filterNullish";
+import { GeneralState } from "./general-state.model";
 
-export interface WorkoutState {
+export interface WorkoutState extends GeneralState {
     workouts: Workout[]
     selectedWorkoutId: string | undefined;
 }
 const DEFAULT_STATE: WorkoutState = {
     workouts: [],
-    selectedWorkoutId: undefined
+    selectedWorkoutId: undefined,
+    loading: false
 }
 @Injectable({
     providedIn: 'root',
@@ -24,6 +26,8 @@ export class WorkoutStore extends ComponentStore<WorkoutState> {
         super(DEFAULT_STATE);
     }
 
+    readonly loading$ = this.select((state) => state.loading);
+    readonly $loading = this.selectSignal((state) => state.loading);
     readonly workouts$ = this.select((state) => state.workouts);
     readonly $workouts = this.selectSignal((state) => state.workouts);
     readonly selectedWorkoutId$ = this.select((state) => state.selectedWorkoutId);
@@ -31,6 +35,12 @@ export class WorkoutStore extends ComponentStore<WorkoutState> {
     readonly $selectedWorkout = computed(() => {
         return this.$workouts().find(workout => workout.id === this.$selectedWorkoutId())
     })
+
+    private readonly setLoading = this.updater(
+        (state: WorkoutState, loading: boolean) => ({
+            ...state, loading: loading
+        })
+    )
 
     private readonly setWorkouts = this.updater(
         (state: WorkoutState, workouts: Workout[]) => ({
@@ -77,8 +87,9 @@ export class WorkoutStore extends ComponentStore<WorkoutState> {
     readonly saveWorkout = this.effect((workout$: Observable<Partial<Workout> | undefined>) => {
         return workout$.pipe(
             filterNullish(),
-            exhaustMap((workout) => 
-                this.workoutService.saveAllWorkouts([workout as Workout]).pipe(
+            switchMap((workout) => {
+                this.setLoading(true);
+                return this.workoutService.saveAllWorkouts([workout as Workout]).pipe(
                     tapResponse(
                         (res) => {
                             const saved = res.at(0);
@@ -90,8 +101,10 @@ export class WorkoutStore extends ComponentStore<WorkoutState> {
                             }
                         },
                         (err) => console.error(err),
-                    )
+                    ),
+                    finalize(() => this.setLoading(false))
                 )
+            }
             )
         )
     })

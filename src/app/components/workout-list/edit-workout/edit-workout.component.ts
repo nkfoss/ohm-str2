@@ -86,6 +86,7 @@ export class EditWorkoutComponent implements OnInit, OnDestroy {
     );
     tagNames: string[] = [];
     $params = toSignal(this.route.queryParams);
+    $loading = this.workoutStore.$loading;
     $selectedMillis = computed(() => {
         const params = this.$params();
         if (params && params['day'] && params['month'] && params['year']) {
@@ -106,7 +107,6 @@ export class EditWorkoutComponent implements OnInit, OnDestroy {
         private exerciseStore: ExerciseStore,
         private tagStore: TagStore,
         private route: ActivatedRoute,
-        private location: Location,
         private dialog: MatDialog,
         private router: Router
     ) {}
