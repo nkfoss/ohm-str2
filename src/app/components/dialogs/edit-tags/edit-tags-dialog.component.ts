@@ -93,7 +93,7 @@ export class EditTagsDialogComponent implements OnInit, OnChanges {
     onTagSearch(search: string) {
         this.tagSearchResults = this.tagStore
             .$tags()
-            .filter((tag) => tag.name.includes(search));
+            .filter((tag) => tag.name.toLowerCase().includes(search.toLowerCase()));
     }
     onTagSelected(event: MatAutocompleteSelectedEvent) {
         this.tags.push(event.option.value);
