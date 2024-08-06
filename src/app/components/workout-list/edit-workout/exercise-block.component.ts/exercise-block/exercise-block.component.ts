@@ -6,7 +6,10 @@ import {
     Output,
     SimpleChanges,
 } from '@angular/core';
-import { ExerciseBlock, ExerciseSet } from '../../../../../models/workout.model';
+import {
+    ExerciseBlock,
+    ExerciseSet,
+} from '../../../../../models/workout.model';
 import { SelectionModel } from '@angular/cdk/collections';
 import { MatTableModule } from '@angular/material/table';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -72,10 +75,16 @@ export class ExerciseBlockComponent implements OnChanges {
     }
 
     onAddSet() {
-        const dialogRef = this.dialog.open<EditSetDialogComponent, ExerciseSet, ExerciseSet>(
+        const dialogRef = this.dialog.open<
             EditSetDialogComponent,
-            { data: {} }
-        );
+            ExerciseSet,
+            ExerciseSet
+        >(EditSetDialogComponent, {
+            data: {},
+            position: {
+                top: `${window.innerHeight / 5}px`,
+            },
+        });
         dialogRef
             .afterClosed()
             .pipe(filterNullish())
@@ -87,12 +96,16 @@ export class ExerciseBlockComponent implements OnChanges {
 
     onEditSet(index: number) {
         const selected = { ...this.exerciseBlock.sets.at(index) };
-        const dialogRef = this.dialog.open<EditSetDialogComponent, ExerciseSet, ExerciseSet>(
+        const dialogRef = this.dialog.open<
             EditSetDialogComponent,
-            {
-                data: selected,
-            }
-        );
+            ExerciseSet,
+            ExerciseSet
+        >(EditSetDialogComponent, {
+            data: selected,
+            position: {
+                top: `${window.innerHeight / 5}px`
+            },
+        });
         dialogRef
             .afterClosed()
             .pipe(filterNullish())
@@ -112,11 +125,10 @@ export class ExerciseBlockComponent implements OnChanges {
             ConfirmationDialogComponent,
             ConfirmationDialogData
         >(ConfirmationDialogComponent, {
-            data: { 
+            data: {
                 message: 'Are you sure you want to delete this block?',
                 confirmButtonColor: 'warn',
             },
-            
         });
         dialogRef.afterClosed().subscribe((confirmed) => {
             if (confirmed) {

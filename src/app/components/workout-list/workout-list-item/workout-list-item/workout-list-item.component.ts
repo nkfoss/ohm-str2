@@ -148,6 +148,9 @@ export class WorkoutListItemComponent implements  OnChanges, OnDestroy {
             data: {
                 tagIds: this.$workout().tagIds ?? [],
             },
+            position: {
+                top: `${window.innerHeight / 5}px`
+            },
         });
         dialogRef
             .afterClosed()

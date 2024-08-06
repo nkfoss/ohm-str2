@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit, computed } from '@angular/core';
 import { ExerciseBlock, Workout } from '../../../models/workout.model';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ExerciseBlockComponent } from './exercise-block.component.ts/exercise-block/exercise-block.component';
-import { AsyncPipe, CommonModule, Location } from '@angular/common';
+import { AsyncPipe, CommonModule } from '@angular/common';
 import { WorkoutForm } from '../../../models/forms/workout-form.model';
 import { BehaviorSubject, Observable, Subject, filter, skip, take } from 'rxjs';
 import { MatIconModule } from '@angular/material/icon';
@@ -130,18 +130,10 @@ export class EditWorkoutComponent implements OnInit, OnDestroy {
                 new WorkoutDataForm(this.workout)
             );
         }
-        console.log('id', this.workoutStore.$selectedWorkoutId());
     }
 
     onAddBlock() {
-        const dialogRef = this.dialog.open<
-            AddBlockDialogComponent,
-            AddBlockDialogData,
-            string
-        >(AddBlockDialogComponent, {
-            width: '400px',
-            data: { exercises: this.$exercises() },
-        });
+        const dialogRef = this.openAddBlockDialog();
         dialogRef
             .afterClosed()
             .pipe(filterNullish())
@@ -159,6 +151,23 @@ export class EditWorkoutComponent implements OnInit, OnDestroy {
                         });
                 }
             });
+    }
+
+    private openAddBlockDialog() {
+        const bodyRect = document.body.getBoundingClientRect();
+        console.log(bodyRect.top, bodyRect.right, bodyRect.bottom/2, bodyRect.left)
+        const dialogRef = this.dialog.open<
+            AddBlockDialogComponent,
+            AddBlockDialogData,
+            string
+        >(AddBlockDialogComponent, {
+            width: '400px',
+            position: {
+                top: `${window.innerHeight / 5}px`
+            },
+            data: { exercises: this.$exercises() },
+        });
+        return dialogRef;
     }
 
     private confirmCreateNewExercise(name: string): Observable<boolean> {
