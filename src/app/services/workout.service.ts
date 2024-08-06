@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Workout } from '../models/workout.model';
-import { Observable, map, of } from 'rxjs';
+import { Observable, map, of, throwError } from 'rxjs';
 import { v4 as uuidv4 } from 'uuid';
 import { HttpClient } from '@angular/common/http';
 import { baseUrl } from '../constants/app.constants';
@@ -45,7 +45,7 @@ export class WorkoutService {
                     workouts.push({ id: tagId, ...res[tagId] } as Workout);
                 }
                 return workouts;
-            })
+            }),
         );
     }
 

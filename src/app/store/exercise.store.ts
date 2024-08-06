@@ -67,6 +67,7 @@ export class ExerciseStore extends ComponentStore<ExerciseState> {
             GenericSnackBarData
         >(GenericSnackbarComponent, {
             data: {
+                status: 'success',
                 message: `Created exercise "${exerciseName}"!`,
             },
             verticalPosition: 'bottom',

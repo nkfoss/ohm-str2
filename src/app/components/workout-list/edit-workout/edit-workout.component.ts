@@ -86,7 +86,9 @@ export class EditWorkoutComponent implements OnInit, OnDestroy {
     );
     tagNames: string[] = [];
     $params = toSignal(this.route.queryParams);
-    $loading = this.workoutStore.$loading;
+    $loading = computed(() => {
+        return this.workoutStore.$status() === 'loading';
+    });
     $selectedMillis = computed(() => {
         const params = this.$params();
         if (params && params['day'] && params['month'] && params['year']) {
@@ -207,13 +209,24 @@ export class EditWorkoutComponent implements OnInit, OnDestroy {
             this.workoutStore.selectedWorkoutId$
                 .pipe(filterNullish(), take(1))
                 .subscribe((id) => {
-                    this.workout = this.workoutStore.$selectedWorkout() ?? this.workout;
+                    this.workout =
+                        this.workoutStore.$selectedWorkout() ?? this.workout;
                     this.router.navigate([], {
                         relativeTo: this.route,
                         queryParams: { id: id, ...this.$params() },
                     });
                 });
         }
+        this.workoutStore.status$
+            .pipe(
+                filter(
+                    (status) => status !== 'loading' && status !== 'unsaved'
+                ),
+                take(1)
+            )
+            .subscribe((status) => {
+                this.workoutStore.setStatus('unsaved');
+            });
         this.workoutStore.saveWorkout(this.workout);
     }
 

@@ -2,3 +2,19 @@
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+.generic-snackbar-success {
+    background: green;
+    color: white;
+    min-height: 40px;
+    margin: 15px;
+    font-size: 14px;
+}
+
+.generic-snackbar-error {
+    background: red;
+    color: white;
+    min-height: 40px;
+    margin: 15px;
+    font-size: 14px;
+}

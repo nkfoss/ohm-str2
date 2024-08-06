@@ -1,3 +1,5 @@
 export interface GeneralState {
-    loading: boolean
+    status: StateStatus
 }
+
+export type StateStatus = 'unsaved' | 'loading' | 'loaded' | 'error'
