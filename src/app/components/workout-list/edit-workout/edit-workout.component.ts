@@ -85,10 +85,10 @@ export class EditWorkoutComponent implements OnInit, OnDestroy {
         new WorkoutDataForm()
     );
     tagNames: string[] = [];
-    $params = toSignal(this.route.queryParams);
-    $loading = computed(() => {
-        return this.workoutStore.$status() === 'loading';
+    $processing = computed(() => {
+        return this.workoutStore.$status() === 'processing';
     });
+    $params = toSignal(this.route.queryParams);
     $selectedMillis = computed(() => {
         const params = this.$params();
         if (params && params['day'] && params['month'] && params['year']) {
@@ -226,16 +226,6 @@ export class EditWorkoutComponent implements OnInit, OnDestroy {
                     });
                 });
         }
-        this.workoutStore.status$
-            .pipe(
-                filter(
-                    (status) => status !== 'loading' && status !== 'unsaved'
-                ),
-                take(1)
-            )
-            .subscribe((status) => {
-                this.workoutStore.setStatus('unsaved');
-            });
         this.workoutStore.saveWorkout(this.workout);
     }
 

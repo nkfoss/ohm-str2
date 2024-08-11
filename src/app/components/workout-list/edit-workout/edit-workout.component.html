@@ -6,7 +6,7 @@
             Back
         </button>
         <div class="save-button-container">
-            <button mat-fab extended color="primary" (click)="onSave()" [disabled]="!workoutDataForm.valid || $loading()">
+            <button mat-fab extended color="primary" (click)="onSave()" [disabled]="!workoutDataForm.valid || $processing()">
                 Save
             </button>
         </div>
