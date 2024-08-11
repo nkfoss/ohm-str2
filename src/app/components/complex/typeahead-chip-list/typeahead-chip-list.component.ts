@@ -3,32 +3,23 @@ import {
     EventEmitter,
     Input,
     Output,
-    Pipe,
-    PipeTransform,
+    computed,
+    input,
 } from '@angular/core';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { TypeaheadResult, TypeaheadSearchComponent } from '../../typeahead-search/typeahead-search.component';
+import { TypeaheadSearchComponent } from '../../typeahead-search/typeahead-search.component';
 import {
     MatAutocompleteModule,
     MatAutocompleteSelectedEvent,
 } from '@angular/material/autocomplete';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
-import { ChipListComponent, ChipListItemWrapper } from '../../chip-list/chip-list.component';
-
-@Pipe({ name: 'typeaheadChipListResult', standalone: true })
-export class TypeaheadChiplistResultPipe implements PipeTransform {
-    transform(searchResults: any[], chipItems: ChipListItemWrapper[]): TypeaheadResult[] {
-        return searchResults.map(result => {
-            return {
-                disabled: chipItems.map(chipItem => chipItem.item).includes(result),
-                result: result
-            }
-        })
-    }
-}
+import {
+    ChipListComponent,
+    ChipListItemWrapper,
+} from '../../chip-list/chip-list.component';
 
 @Component({
     selector: 'app-typeahead-chip-list',
@@ -37,25 +28,31 @@ export class TypeaheadChiplistResultPipe implements PipeTransform {
     styleUrl: './typeahead-chip-list.component.scss',
     imports: [
         ChipListComponent,
-        TypeaheadSearchComponent,
         MatAutocompleteModule,
         MatChipsModule,
         MatFormFieldModule,
         MatIconModule,
         MatInputModule,
         ReactiveFormsModule,
-        TypeaheadChiplistResultPipe
+        TypeaheadSearchComponent,
     ],
 })
 export class TypeaheadChipListComponent {
     @Input()
     placeholder: string = 'Type to search...';
 
-    @Input()
-    searchResults: any[] = [];
-
-    @Input()
-    chipItems: ChipListItemWrapper[] = [];
+    $searchResults = input.required<any[]>();
+    $chipItems = input.required<ChipListItemWrapper[]>();
+    $chipListResults = computed(() => {
+        return this.$searchResults().map((result) => {
+            return {
+                disabled: this.$chipItems()
+                    .map((chipItem) => chipItem.item)
+                    .includes(result),
+                result: result,
+            };
+        });
+    });
 
     @Input()
     disabled: boolean = false;
@@ -93,5 +90,4 @@ export class TypeaheadChipListComponent {
 
     @Output()
     chipRemoved: EventEmitter<number> = new EventEmitter();
-
 }

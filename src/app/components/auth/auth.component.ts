@@ -4,7 +4,6 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { noEmptyStringValidator } from '../validators/empty-string.validator';
 import { MatButtonModule } from '@angular/material/button';
-import { JsonPipe } from '@angular/common';
 import { AuthService, FirebaseAuthResponse } from '../../services/auth.service';
 import { Observable, take } from 'rxjs';
 import { Router } from '@angular/router';
@@ -12,7 +11,7 @@ import { Router } from '@angular/router';
 @Component({
     selector: 'app-auth',
     standalone: true,
-    imports: [MatButtonModule, MatFormFieldModule, MatInputModule, ReactiveFormsModule, JsonPipe],
+    imports: [MatButtonModule, MatFormFieldModule, MatInputModule, ReactiveFormsModule],
     templateUrl: './auth.component.html',
     styleUrl: './auth.component.scss',
 })

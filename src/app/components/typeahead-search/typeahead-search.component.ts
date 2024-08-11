@@ -21,7 +21,6 @@ import {
     takeUntil,
 } from 'rxjs';
 import { getProp } from '../../util/object.util';
-import { JsonPipe } from '@angular/common';
 
 export interface TypeaheadResult {
     disabled: boolean;
@@ -30,7 +29,7 @@ export interface TypeaheadResult {
 @Component({
     selector: 'app-typeahead-search',
     standalone: true,
-    imports: [MatFormFieldModule, MatInputModule, MatAutocompleteModule, ReactiveFormsModule, JsonPipe],
+    imports: [MatFormFieldModule, MatInputModule, MatAutocompleteModule, ReactiveFormsModule],
     templateUrl: './typeahead-search.component.html',
     styleUrl: './typeahead-search.component.scss',
 })

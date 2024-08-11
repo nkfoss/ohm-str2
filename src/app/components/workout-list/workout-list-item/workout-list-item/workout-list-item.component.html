@@ -9,7 +9,7 @@
                 <span>
                     <mat-card-subtitle class="tag-subtitle"
                         >
-                        {{ $tagNames() | join: ', ' }}
+                        {{ $delimitedTagNames() }}
                         <mat-icon
                         (click)="onEditTags()"
                             class="tag-icon"

@@ -12,11 +12,11 @@
             typeaheadDisplayPropertyPath ? typeaheadDisplayPropertyPath : 'item'
         "
         [resultValuePropertyPath]="typeaheadValuePropertyPath"
-        [searchResults]="searchResults | typeaheadChipListResult : chipItems"
+        [searchResults]="$searchResults()"
         [valueFormCtl]="typeaheadValueFormCtl"
     ></app-typeahead-search>
     <app-chip-list
-        [chipItems]="chipItems"
+        [chipItems]="$chipItems()"
         [displayValuePropertyPath]="chipDisplayPropertyPath"
         (chipRemoved)="chipRemoved.emit($event)"
     ></app-chip-list>

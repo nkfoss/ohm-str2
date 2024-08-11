@@ -5,14 +5,11 @@ import {
     OnChanges,
     OnDestroy,
     Output,
-    Pipe,
-    PipeTransform,
     SimpleChanges,
     computed,
 } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
-import { WorkoutSummaryPipe } from '../../../../pipes/workout-summary.pipe';
 import {
     Exercise,
     ExerciseBlock,
@@ -21,8 +18,6 @@ import {
 } from '../../../../models/workout.model';
 import { CommonModule } from '@angular/common';
 import { MatTableModule } from '@angular/material/table';
-import { JoinPipe } from '../../../../pipes/join.pipe';
-import { DateTime, DateTimeFormatOptions } from 'luxon';
 import { MatButtonModule } from '@angular/material/button';
 import { Subject, take, takeUntil } from 'rxjs';
 import { ExerciseStore } from '../../../../store/exercise.store';
@@ -40,33 +35,21 @@ import {
 import { WorkoutStore } from '../../../../store/workout.store';
 import { MatMenuModule } from '@angular/material/menu';
 
-@Pipe({
-    name: 'exerciseBlockSummary',
-    standalone: true,
-})
-export class ExerciseBlockSummaryPipe implements PipeTransform {
-    transform(millis: number, formatOptions: DateTimeFormatOptions): string {
-        return DateTime.fromMillis(millis).toLocaleString(formatOptions);
-    }
-}
-
 @Component({
     selector: 'app-workout-list-item',
     standalone: true,
     imports: [
         CommonModule,
-        JoinPipe,
         MatButtonModule,
         MatCardModule,
         MatIconModule,
         MatMenuModule,
         MatTableModule,
-        WorkoutSummaryPipe,
     ],
     templateUrl: './workout-list-item.component.html',
     styleUrl: './workout-list-item.component.scss',
 })
-export class WorkoutListItemComponent implements  OnChanges, OnDestroy {
+export class WorkoutListItemComponent implements OnChanges, OnDestroy {
     $workout = input.required<Workout>();
 
     @Output()
@@ -84,12 +67,13 @@ export class WorkoutListItemComponent implements  OnChanges, OnDestroy {
     dataSource: ExerciseBlockTableData[] = [];
 
     $tagNames = computed(() => {
-        const tags = this.$workout().tagIds
+        const tags = this.$workout().tagIds;
         return this.tagStore
             .$tags()
             .filter((tag) => tags?.includes(tag.id))
             .map((tag) => tag.name);
     });
+    $delimitedTagNames = computed(() => this.$tagNames().join(', '))
 
     constructor(
         private exerciseStore: ExerciseStore,
@@ -103,12 +87,8 @@ export class WorkoutListItemComponent implements  OnChanges, OnDestroy {
             .pipe(takeUntil(this.onDestroy$))
             .subscribe((exercises) => {
                 const exerciseBlocks = this.$workout().exerciseBlocks ?? [];
-                this.dataSource = exerciseBlocks.map(
-                    (exerciseBlock) =>
-                        this.createExerciseBlockTableData(
-                            exerciseBlock,
-                            exercises
-                        )
+                this.dataSource = exerciseBlocks.map((exerciseBlock) =>
+                    this.createExerciseBlockTableData(exerciseBlock, exercises)
                 );
             });
         this.exerciseStore.fetchExercises();
@@ -150,7 +130,7 @@ export class WorkoutListItemComponent implements  OnChanges, OnDestroy {
                 tagIds: this.$workout().tagIds ?? [],
             },
             position: {
-                top: `${window.innerHeight / 5}px`
+                top: `${window.innerHeight / 5}px`,
             },
         });
         dialogRef
@@ -164,10 +144,10 @@ export class WorkoutListItemComponent implements  OnChanges, OnDestroy {
                 if (newTags.length) {
                     this.openNewTagConfirmation(newTags);
                 } else {
-                    this.$workout().tagIds = [...tags.map(tag => tag.id)]
+                    this.$workout().tagIds = [...tags.map((tag) => tag.id)];
                     this.workoutStore.saveWorkout({
                         ...this.$workout(),
-                        tagIds: [...tags.map(tag => tag.id)]
+                        tagIds: [...tags.map((tag) => tag.id)],
                     });
                 }
             });
@@ -193,7 +173,7 @@ export class WorkoutListItemComponent implements  OnChanges, OnDestroy {
                     .pipe(filterNullish(), take(1))
                     .subscribe((updatedTags) => {
                         this.$workout().tagIds?.push(
-                            ...updatedTags.map(tag => tag.id)
+                            ...updatedTags.map((tag) => tag.id)
                         );
                         this.workoutStore.saveWorkout(this.$workout());
                         this.tagStore.setUpdatedTags(undefined);
@@ -202,7 +182,6 @@ export class WorkoutListItemComponent implements  OnChanges, OnDestroy {
             }
         });
     }
-
 }
 
 export interface ExerciseBlockTableData {

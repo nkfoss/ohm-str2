@@ -4,10 +4,10 @@
             (calendarDatePicked)="onCalendarDatePicked($event)"
             (leftArrowClicked)="changeDate(-1)"
             (rightArrowClicked)="changeDate(1)"
-            [dateString]="$selectedMillis() | millisToLocalDateString"
+            [dateString]="$millisDateString()"
         />
     </div>
-    @for (workout of $selectedWorkouts() | workoutSort; track $index) {
+    @for (workout of $sortedWorkouts(); track $index) {
     <app-workout-list-item
         [$workout]="workout"
         (editWorkout)="onEditWorkout($event)"

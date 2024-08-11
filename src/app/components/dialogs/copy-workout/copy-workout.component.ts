@@ -13,11 +13,11 @@ import { MatInputModule } from '@angular/material/input';
     selector: 'app-copy-workout',
     standalone: true,
     imports: [
+        FormsModule,
+        MatButtonModule,
         MatDatepickerModule,
         MatDialogModule,
         MatInputModule,
-        MatButtonModule,
-        FormsModule,
         MatLuxonDateModule,
     ],
     providers: [provideLuxonDateAdapter()],

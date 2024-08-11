@@ -1,12 +1,11 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, of, pipe, map } from 'rxjs';
+import { BehaviorSubject, Observable, pipe, map } from 'rxjs';
 
 @Injectable({
     providedIn: 'root',
 })
 export class LoadingSpinnerService {
     private readonly isLoadingSubject = new BehaviorSubject<boolean>(false);
-    private readonly loadingMessagesSubject = new BehaviorSubject<string[]>([]);
     private readonly runningProcesses = new BehaviorSubject<{[key: string]: string}>({});
 
     constructor() {}

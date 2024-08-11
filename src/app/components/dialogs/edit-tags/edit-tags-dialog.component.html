@@ -7,8 +7,8 @@
             (search)="onTagSearch($event)"
             (typeaheadSubmit)="onTagNameSubmitted($event)"
             [chipDisplayPropertyPath]="'name'"
-            [chipItems]="$chipListItems()"
-            [searchResults]="tagSearchResults"
+            [$chipItems]="$chipListItems()"
+            [$searchResults]="tagSearchResults"
             [typeaheadDisplayFormCtl]="typeaheadDisplayFormControl"
             [typeaheadDisplayPropertyPath]="'name'"
         ></app-typeahead-chip-list>

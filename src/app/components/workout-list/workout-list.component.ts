@@ -1,13 +1,6 @@
-import {
-    Component,
-    OnInit,
-    Pipe,
-    PipeTransform,
-    computed,
-} from '@angular/core';
+import { Component, OnInit, computed } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DateTime, DateTimeFormatOptions } from 'luxon';
-import { Workout } from '../../models/workout.model';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -29,57 +22,23 @@ import { TypeaheadChipListComponent } from '../complex/typeahead-chip-list/typea
 import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { DateNavComponent } from '../date-nav/date-nav.component';
-import { filter, take } from 'rxjs';
 import { CopyWorkoutComponent } from '../dialogs/copy-workout/copy-workout.component';
 import { filterNullish } from '../../util/filterNullish';
-
-@Pipe({
-    name: 'millisToLocalDateString',
-    standalone: true,
-})
-export class MillisToLocalDateStringPipe implements PipeTransform {
-    transform(millis?: number): string {
-        if (millis === undefined) {
-            return '';
-        }
-        const navDateFormat: DateTimeFormatOptions = {
-            weekday: 'short',
-            month: 'short',
-            day: 'numeric',
-            year: 'numeric',
-        };
-        return DateTime.fromMillis(millis).toLocaleString(navDateFormat);
-    }
-}
-@Pipe({
-    name: 'workoutSort',
-    standalone: true,
-})
-export class WorkoutSortPipe implements PipeTransform {
-    transform(workouts: Workout[] | null): Workout[] {
-        if (workouts) {
-            return workouts.sort((a, b) => a.instantMillis - b.instantMillis);
-        }
-        return [];
-    }
-}
 
 @Component({
     selector: 'app-workout-list',
     standalone: true,
     imports: [
-        DateNavComponent,
-        WorkoutListItemComponent,
         CommonModule,
+        DateNavComponent,
         MatIconModule,
         MatCardModule,
         MatButtonModule,
         MatDatepickerModule,
         MatLuxonDateModule,
         MatFormFieldModule,
-        MillisToLocalDateStringPipe,
-        WorkoutSortPipe,
         TypeaheadChipListComponent,
+        WorkoutListItemComponent,
     ],
     templateUrl: './workout-list.component.html',
     styleUrl: './workout-list.component.scss',
@@ -97,6 +56,19 @@ export class WorkoutListComponent implements OnInit {
             return undefined;
         }
     });
+    $millisDateString = computed(() => {
+        const millis = this.$selectedMillis();
+        if (millis === undefined) {
+            return '';
+        }
+        const navDateFormat: DateTimeFormatOptions = {
+            weekday: 'short',
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric',
+        };
+        return DateTime.fromMillis(millis).toLocaleString(navDateFormat);
+    });
     $selectedWorkouts = computed(() => {
         const selectedMillis = this.$selectedMillis();
         if (selectedMillis) {
@@ -113,6 +85,11 @@ export class WorkoutListComponent implements OnInit {
         } else {
             return [];
         }
+    });
+    $sortedWorkouts = computed(() => {
+        return this.$selectedWorkouts().sort(
+            (a, b) => a.instantMillis - b.instantMillis
+        );
     });
 
     constructor(
