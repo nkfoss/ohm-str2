@@ -6,7 +6,7 @@ import { noEmptyStringValidator } from '../validators/empty-string.validator';
 import { MatButtonModule } from '@angular/material/button';
 import { JsonPipe } from '@angular/common';
 import { AuthService, FirebaseAuthResponse } from '../../services/auth.service';
-import { Observable } from 'rxjs';
+import { Observable, take } from 'rxjs';
 import { Router } from '@angular/router';
 
 @Component({
@@ -33,7 +33,7 @@ export class AuthComponent {
         } else {
             authObs = this.authService.login(this.usernameFormControl.value, this.passwordFormControl.value);
         }
-        authObs.subscribe({
+        authObs.pipe(take(1)).subscribe({
             next: (res) => this.router.navigate(['/home']),
             error: (err) => this.errorMsg = err.message,
         })
