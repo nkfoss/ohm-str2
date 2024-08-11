@@ -12,13 +12,14 @@
         [$workout]="workout"
         (editWorkout)="onEditWorkout($event)"
         (deleteWorkout)="onDeleteWorkout($event)"
+        (copyWorkout)="onCopyWorkout($event)"
     ></app-workout-list-item>
     } @empty {
     <p>No workouts for today.</p>
     }
     <div class="workout-list-footer">
         <span class="button-container">
-            <button mat-fab extended color="primary" (click)="onEditWorkout()">
+            <button mat-fab extended color="primary" (click)="onNewWorkout()">
                 <mat-icon>add</mat-icon>
                 Add workout
             </button>

@@ -39,12 +39,20 @@
             }
         </mat-card-content>
         <div class="button-container">
-            <button mat-mini-fab extended color="primary" (click)="onEditWorkout()">
+            <button mat-mini-fab extended color="primary" (click)="editWorkout.emit($workout().id)">
                 <mat-icon>edit</mat-icon>
             </button>
-            <button mat-mini-fab extended color="warn" (click)="onDeleteWorkout()">
-                <mat-icon>delete</mat-icon>
+            <button mat-mini-fab extended [matMenuTriggerFor]="menu" color="tertiary">
+                <mat-icon>more_vert</mat-icon>
             </button>
+            <mat-menu #menu="matMenu">
+                <button mat-menu-item (click)="copyWorkout.emit($workout().id)">
+                    <span>Copy</span>
+                </button>
+                <button mat-menu-item (click)="deleteWorkout.emit($workout().id)">
+                    <span>Delete</span>
+                </button>
+            </mat-menu>
         </div>
     </mat-card>
     <br>

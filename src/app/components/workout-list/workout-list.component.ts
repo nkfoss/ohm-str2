@@ -29,6 +29,9 @@ import { TypeaheadChipListComponent } from '../complex/typeahead-chip-list/typea
 import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { DateNavComponent } from '../date-nav/date-nav.component';
+import { filter, take } from 'rxjs';
+import { CopyWorkoutComponent } from '../dialogs/copy-workout/copy-workout.component';
+import { filterNullish } from '../../util/filterNullish';
 
 @Pipe({
     name: 'millisToLocalDateString',
@@ -120,9 +123,9 @@ export class WorkoutListComponent implements OnInit {
     ) {}
 
     ngOnInit(): void {
-        this.route.queryParams.subscribe(_ => {
+        this.route.queryParams.subscribe((_) => {
             this.workoutStore.fetchWorkouts();
-        })
+        });
     }
 
     onEditWorkout(workoutId?: string) {
@@ -130,6 +133,42 @@ export class WorkoutListComponent implements OnInit {
             relativeTo: this.route,
             queryParams: { id: workoutId, ...this.$params() },
         });
+    }
+
+    onNewWorkout() {
+        this.workoutStore.saveWorkout({
+            name: 'new workout',
+            instantMillis: this.$selectedMillis(),
+        });
+    }
+
+    onCopyWorkout(workoutId: string) {
+        const copied = this.$selectedWorkouts().find(
+            (workout) => workout.id === workoutId
+        );
+        if (copied) {
+            const dialogRef = this.dialog.open<
+                CopyWorkoutComponent,
+                any,
+                DateTime
+            >(CopyWorkoutComponent, {
+                width: '300px',
+                position: {
+                    top: `${window.innerHeight / 5}px`,
+                },
+            });
+            dialogRef
+                .afterClosed()
+                .pipe(filterNullish())
+                .subscribe((datetime) => {
+                    const { id, name, instantMillis, ...rest } = copied;
+                    this.workoutStore.saveWorkout({
+                        name: `Copy of ${name ?? 'workout'}`,
+                        instantMillis: datetime?.toMillis(),
+                        ...rest,
+                    });
+                });
+        }
     }
 
     onDeleteWorkout(workoutId: string) {
@@ -156,18 +195,18 @@ export class WorkoutListComponent implements OnInit {
                 params['day'] + params['month'] + params['year'],
                 'dMyyyy'
             );
-            dt = dt.plus({ days: delta})
+            dt = dt.plus({ days: delta });
             this.router.navigate(this.route.snapshot.url, {
-                queryParams: { day: dt.day, month: dt.month, year: dt.year  },
+                queryParams: { day: dt.day, month: dt.month, year: dt.year },
             });
         }
     }
 
     onCalendarDatePicked(event: MatDatepickerInputEvent<DateTime>) {
         if (event.value) {
-            const dt = event.value
+            const dt = event.value;
             this.router.navigate(this.route.snapshot.url, {
-                queryParams: { day: dt.day, month: dt.month, year: dt.year  },
+                queryParams: { day: dt.day, month: dt.month, year: dt.year },
             });
         }
     }

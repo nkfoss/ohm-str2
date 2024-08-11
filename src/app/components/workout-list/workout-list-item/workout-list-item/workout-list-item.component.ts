@@ -38,6 +38,7 @@ import {
     ConfirmationDialogData,
 } from '../../../dialogs/confirmation-dialog/confirmation-dialog.component';
 import { WorkoutStore } from '../../../../store/workout.store';
+import { MatMenuModule } from '@angular/material/menu';
 
 @Pipe({
     name: 'exerciseBlockSummary',
@@ -53,13 +54,14 @@ export class ExerciseBlockSummaryPipe implements PipeTransform {
     selector: 'app-workout-list-item',
     standalone: true,
     imports: [
-        MatIconModule,
-        MatButtonModule,
-        MatCardModule,
-        WorkoutSummaryPipe,
-        MatTableModule,
         CommonModule,
         JoinPipe,
+        MatButtonModule,
+        MatCardModule,
+        MatIconModule,
+        MatMenuModule,
+        MatTableModule,
+        WorkoutSummaryPipe,
     ],
     templateUrl: './workout-list-item.component.html',
     styleUrl: './workout-list-item.component.scss',
@@ -72,6 +74,9 @@ export class WorkoutListItemComponent implements  OnChanges, OnDestroy {
 
     @Output()
     deleteWorkout = new EventEmitter<string>();
+
+    @Output()
+    copyWorkout = new EventEmitter<string>();
 
     onDestroy$ = new Subject<void>();
 
@@ -132,10 +137,6 @@ export class WorkoutListItemComponent implements  OnChanges, OnDestroy {
             exerciseName: exerciseName ?? 'not found',
             excerciseBlockSummary: setSummary,
         };
-    }
-
-    onEditWorkout() {
-        this.editWorkout.emit(this.$workout().id);
     }
 
     onEditTags() {
@@ -202,9 +203,6 @@ export class WorkoutListItemComponent implements  OnChanges, OnDestroy {
         });
     }
 
-    onDeleteWorkout() {
-        this.deleteWorkout.emit(this.$workout().id);
-    }
 }
 
 export interface ExerciseBlockTableData {
