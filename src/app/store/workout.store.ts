@@ -7,7 +7,6 @@ import {
     Observable,
     catchError,
     exhaustMap,
-    finalize,
     switchMap,
     tap,
 } from 'rxjs';
@@ -26,7 +25,7 @@ export interface WorkoutState extends GeneralState {
 const DEFAULT_STATE: WorkoutState = {
     workouts: [],
     selectedWorkoutId: undefined,
-    status: 'unsaved',
+    status: 'normal',
 };
 @Injectable({
     providedIn: 'root',
@@ -115,20 +114,18 @@ export class WorkoutStore extends ComponentStore<WorkoutState> {
             return workout$.pipe(
                 filterNullish(),
                 switchMap((workout) => {
-                    this.setStatus('loading');
+                    this.setStatus('processing');
                     return this.workoutService
                         .saveAllWorkouts([workout as Workout])
                         .pipe(
                             tap({
                                 next: (res) => {
                                     this.showSnackbar('success')
-                                    this.setStatus('loaded');
+                                    this.setStatus('complete');
                                     const saved = res.at(0);
                                     if (saved) {
-                                        if (!workout.id) {
-                                            this.setSelectedWorkoutId(saved.id);
-                                        }
                                         this.updateWorkout(saved);
+                                        this.setStatus('normal');
                                     }
                                 },
                                 error: (err) => {
@@ -137,19 +134,6 @@ export class WorkoutStore extends ComponentStore<WorkoutState> {
                                 },
                             }),
                             catchError(() => EMPTY)
-                            // tapResponse(
-                            //     (res) => {
-                            //         const saved = res.at(0);
-                            //         if (saved) {
-                            //             if (!workout.id) {
-                            //                 this.setSelectedWorkoutId(saved.id);
-                            //             }
-                            //             this.updateWorkout(saved);
-                            //         }
-                            //     },
-                            //     (err) => console.error(err),
-                            // ),
-                            // finalize(() => this.setLoading(false))
                         );
                 })
             );

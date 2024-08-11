@@ -2,4 +2,4 @@ export interface GeneralState {
     status: StateStatus
 }
 
-export type StateStatus = 'unsaved' | 'loading' | 'loaded' | 'error'
+export type StateStatus = 'normal' | 'processing' | 'complete' | 'error'
