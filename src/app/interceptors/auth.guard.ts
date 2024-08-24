@@ -18,7 +18,6 @@ export class AuthGuard implements CanActivate {
         route: ActivatedRouteSnapshot,
         state: RouterStateSnapshot
     ): MaybeAsync<GuardResult> {
-        console.log('huard')
         return this.authService.user.pipe(
             take(1),
             map((user) => {
