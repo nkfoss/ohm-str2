@@ -101,22 +101,37 @@ export class WorkoutListItemComponent implements OnChanges, OnDestroy {
     }
 
     private createExerciseBlockTableData(
-        exerciseBlock: ExerciseBlock,
+        block: ExerciseBlock,
         exercises: Exercise[]
     ): ExerciseBlockTableData {
-        let setSummary = '';
-        if (exerciseBlock.sets?.length === 1) {
-            setSummary = '1 set performed';
-        } else if ((exerciseBlock.sets?.length ?? 0) !== 1) {
-            setSummary = (exerciseBlock.sets?.length ?? 0) + ' sets performed';
-        }
+        let blockSummary = this.createBlockSummary(block)
         const exerciseName = exercises.find(
-            (ex) => ex.id === exerciseBlock.exerciseId
+            (ex) => ex.id === block.exerciseId
         )?.name;
         return {
             exerciseName: exerciseName ?? 'not found',
-            excerciseBlockSummary: setSummary,
+            excerciseBlockSummary: blockSummary,
         };
+    }
+
+    private createBlockSummary(block: ExerciseBlock): string {
+        if (!block.sets.length) {
+            return 'No sets'
+        } else {
+            let summary = '';
+            let lastWeight: number;
+            block.sets.forEach((set, i) => {
+                if (i === 0) {
+                    summary += set.weight + 'x' + set.reps;
+                } else if (lastWeight === set.weight) {
+                    summary += ',' + set.reps;
+                } else {
+                    summary += ' ' + set.weight + 'x' + set.reps;
+                }
+                lastWeight = set.weight!;
+            })
+            return summary;
+        }
     }
 
     onEditTags() {
