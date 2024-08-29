@@ -25,6 +25,7 @@ import {
     ConfirmationDialogData,
 } from '../../../../dialogs/confirmation-dialog/confirmation-dialog.component';
 import { ExerciseStore } from '../../../../../store/exercise.store';
+import { MatMenuModule } from '@angular/material/menu';
 
 export interface ExerciseBlockViewModel {
     exerciseName: string;
@@ -33,11 +34,12 @@ export interface ExerciseBlockViewModel {
     selector: 'app-exercise-block',
     standalone: true,
     imports: [
-        MatTableModule,
-        MatCheckboxModule,
         MatButtonModule,
-        MatIconModule,
         MatCardModule,
+        MatCheckboxModule,
+        MatIconModule,
+        MatMenuModule,
+        MatTableModule
     ],
     templateUrl: './exercise-block.component.html',
     styleUrl: './exercise-block.component.scss',
@@ -92,6 +94,14 @@ export class ExerciseBlockComponent implements OnChanges {
                 this.exerciseBlock.sets.push(set);
                 this.dataSource = [...this.exerciseBlock.sets];
             });
+    }
+
+    onCopySet(index: number) {
+        const curr = this.exerciseBlock.sets.at(index);
+        if (curr) {
+            this.exerciseBlock.sets.push({...curr});
+            this.dataSource = [...this.exerciseBlock.sets];
+        }
     }
 
     onEditSet(index: number) {
