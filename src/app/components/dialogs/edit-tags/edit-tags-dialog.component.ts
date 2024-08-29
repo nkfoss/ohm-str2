@@ -4,6 +4,7 @@ import {
     OnChanges,
     OnInit,
     SimpleChanges,
+    WritableSignal,
     computed,
     signal,
 } from '@angular/core';
@@ -21,6 +22,7 @@ import { TypeaheadChipListComponent } from '../../complex/typeahead-chip-list/ty
 import { TagStore } from '../../../store/tag.store';
 import { ChipListItemWrapper } from '../../chip-list/chip-list.component';
 import { FormControl } from '@angular/forms';
+import { TypeaheadResult } from '../../typeahead-search/typeahead-search.component';
 
 export interface EditTagsDialogData {
     tagIds: string[];
@@ -81,7 +83,7 @@ export class EditTagsDialogComponent implements OnInit, OnChanges {
     typeaheadDisplayFormControl: FormControl<string> = new FormControl();
     onTagNameSubmitted(tagName: string) {
         if (
-            !this.tagSearchResults.map((tag) => tag.name).includes(tagName) &&
+            !this.tagSearchResults().map((tag) => tag.name).includes(tagName) &&
             !this.tags.map((tag) => tag.name).includes(tagName)
         ) {
             this.tags.push({ name: tagName });
@@ -89,23 +91,33 @@ export class EditTagsDialogComponent implements OnInit, OnChanges {
             this.typeaheadDisplayFormControl.reset();
         }
     }
-    tagSearchResults: Tag[] = [];
+    tagSearchResults: WritableSignal<Tag[]> = signal([]);
+    tagTypeaheadResults = computed<TypeaheadResult[]>(() => {
+        return this.tagSearchResults().map<TypeaheadResult>((tag) => ({
+            disabled: this.tags.map(tag => tag.id).includes(tag.id),
+            result: tag,
+        }));
+    });
     onTagSearch(search: string) {
-        this.tagSearchResults = this.tagStore
-            .$tags()
-            .filter((tag) => tag.name.toLowerCase().includes(search.toLowerCase()));
+        this.tagSearchResults.set(
+            this.tagStore
+                .$tags()
+                .filter((tag) =>
+                    tag.name.toLowerCase().includes(search.toLowerCase())
+                )
+        );
     }
     onTagSelected(event: MatAutocompleteSelectedEvent) {
         this.tags.push(event.option.value);
         this.$tags.update(() => [...this.tags]);
         this.typeaheadDisplayFormControl.reset();
-        this.tagSearchResults = [];
+        this.tagSearchResults.set([]);
     }
     onChipRemoved(index: number) {
         if (index >= 0) {
             this.tags.splice(index, 1);
-            console.log(this.tags)
-            this.$tags.update(() => [...this.tags])
+            console.log(this.tags);
+            this.$tags.update(() => [...this.tags]);
         }
     }
     // =======================================
