@@ -154,8 +154,6 @@ export class EditWorkoutComponent implements OnInit, OnDestroy {
     }
 
     private openAddBlockDialog() {
-        const bodyRect = document.body.getBoundingClientRect();
-        console.log(bodyRect.top, bodyRect.right, bodyRect.bottom/2, bodyRect.left)
         const dialogRef = this.dialog.open<
             AddBlockDialogComponent,
             AddBlockDialogData,
@@ -163,7 +161,7 @@ export class EditWorkoutComponent implements OnInit, OnDestroy {
         >(AddBlockDialogComponent, {
             width: '400px',
             position: {
-                top: `${window.innerHeight / 5}px`
+                top: `${window.innerHeight / 5}px`,
             },
             data: { exercises: this.$exercises() },
         });

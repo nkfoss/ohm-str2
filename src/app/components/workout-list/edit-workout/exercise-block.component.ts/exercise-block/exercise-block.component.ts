@@ -91,6 +91,9 @@ export class ExerciseBlockComponent implements OnChanges {
             .afterClosed()
             .pipe(filterNullish())
             .subscribe((set: ExerciseSet) => {
+                if (!this.exerciseBlock.sets) {
+                    this.exerciseBlock.sets = [];
+                }
                 this.exerciseBlock.sets.push(set);
                 this.dataSource = [...this.exerciseBlock.sets];
             });
