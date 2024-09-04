@@ -23,8 +23,8 @@ export interface _ExerciseBlock extends Omit<ExerciseBlock, 'id'> {
     instantMillis: number;
 }
 export interface Exercise extends UserInteractable {
-    name?: string;
-    id?: string;
+    name: string;
+    id: string;
 }
 export interface _Exercise extends Omit<Exercise, 'id'> {}
 export interface ExerciseSet extends UserInteractable {

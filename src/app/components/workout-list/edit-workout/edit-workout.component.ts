@@ -192,6 +192,7 @@ export class EditWorkoutComponent implements OnInit, OnDestroy {
             }
         });
         this.exerciseStore.addExercise({
+            id: uuidv4(),
             name: exerciseName,
         });
     }

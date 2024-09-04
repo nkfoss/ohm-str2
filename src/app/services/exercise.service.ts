@@ -1,12 +1,11 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Subject, map, of } from 'rxjs';
+import { Observable, Subject, map, of } from 'rxjs';
 import { Exercise } from '../models/workout.model';
-import { v4 as uuidv4 } from 'uuid';
 import { baseUrl } from '../constants/app.constants';
 
-interface ExercisesResponse {
-    [key: string]: Omit<Exercise, 'id'>
+interface ExercisesEntry {
+    [key: string]: string;
 }
 @Injectable({
     providedIn: 'root',
@@ -18,47 +17,36 @@ export class ExerciseService {
 
     private createdExercise$ = new Subject<Exercise>();
 
-    fetchExercises() {
-        return this.http.get<ExercisesResponse>(this.url).pipe(
-            map(res => {
-                let exercises: Exercise[] = [];
-                for (const exerciseId in res) {
-                    exercises.push({id: exerciseId, ...res[exerciseId]})
-                }
-                return exercises;
-            })
-        );
+    fetchExercises(): Observable<Exercise[]> {
+        return this.http
+            .get<ExercisesEntry>(this.url)
+            .pipe(
+                map((res) =>
+                    Object.entries(res).map(([id, name]) => ({
+                        id: id,
+                        name: name,
+                    }))
+                )
+            );
     }
 
     createNewExercise(exercise: Exercise) {
-        this.saveExercise(exercise).subscribe(ex => {
+        this.saveExercise(exercise).subscribe((ex) => {
             this.createdExercise$.next(ex);
-        })
+        });
     }
 
-    saveExercise(exercise: Exercise) {
-        const toServer: any = {};
-        const id = exercise.id ?? uuidv4();
-        toServer[id] = {
-            ...exercise,
-            id: undefined,
-        }
-        return this.http.patch<ExercisesResponse>(this.url, toServer).pipe(
-            map(res => {
-                let workout: Partial<Exercise> = {};
-                for (const id in res) {
-                    workout = {
-                        id: id,
-                        ...res[id]
-                    }
-                }
-                return workout as Exercise;
+    saveExercise(exercise: any) {
+        const exercisesEntry: ExercisesEntry = {};
+        exercisesEntry[exercise.id] = exercise.name.name;
+        return this.http.patch<ExercisesEntry>(this.url, exercisesEntry).pipe(
+            map((res) => {
+                return {id: Object.keys(res)[0], name: Object.values(res)[0]};
             })
-        )
+        );
     }
 
     deleteExercise(id: string) {
         return of(false);
     }
-
 }

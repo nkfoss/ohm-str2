@@ -4,9 +4,6 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, map, of } from 'rxjs';
 import { baseUrl } from '../constants/app.constants';
 
-interface TagsOnServer {
-    [key: string]: Omit<Tag, 'id'>;
-}
 interface TagsEntry {
     [key: string]: string;
 }
