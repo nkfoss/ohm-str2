@@ -1,5 +1,5 @@
 import { Injectable, computed } from '@angular/core';
-import { Exercise, Workout } from '../models/workout.model';
+import { Workout } from '../models/workout.model';
 import { ComponentStore, tapResponse } from '@ngrx/component-store';
 import { WorkoutService } from '../services/workout.service';
 import {
@@ -31,8 +31,6 @@ const DEFAULT_STATE: WorkoutState = {
     providedIn: 'root',
 })
 export class WorkoutStore extends ComponentStore<WorkoutState> {
-    exercises: Exercise[] = [];
-
     constructor(
         private workoutService: WorkoutService,
         private snackBar: MatSnackBar
@@ -96,10 +94,10 @@ export class WorkoutStore extends ComponentStore<WorkoutState> {
         });
     }
 
-    readonly fetchWorkouts = this.effect((trigger$: Observable<void>) => {
-        return trigger$.pipe(
-            exhaustMap(() =>
-                this.workoutService.fetchWorkouts().pipe(
+    readonly fetchWorkouts = this.effect((millis$: Observable<number>) => {
+        return millis$.pipe(
+            exhaustMap((millis) =>
+                this.workoutService.fetchWorkouts(millis).pipe(
                     tapResponse(
                         (workouts) => this.setWorkouts(workouts),
                         (err) => console.error(err)
@@ -116,21 +114,21 @@ export class WorkoutStore extends ComponentStore<WorkoutState> {
                 switchMap((workout) => {
                     this.setStatus('processing');
                     return this.workoutService
-                        .saveAllWorkouts([workout as Workout])
+                        .saveWorkout(workout as Workout)
                         .pipe(
                             tap({
-                                next: (res) => {
-                                    this.showSnackbar('success')
+                                next: (saved) => {
+                                    this.showSnackbar('success');
                                     this.setStatus('complete');
-                                    const saved = res.at(0);
-                                    if (saved) {
-                                        this.updateWorkout(saved);
-                                        this.setStatus('normal');
-                                    }
+                                    this.updateWorkout(saved);
+                                    this.setStatus('normal');
                                 },
                                 error: (err) => {
-                                    this.showSnackbar('error', 'An error occured. Workout not saved.')
-                                    this.setStatus('error')
+                                    this.showSnackbar(
+                                        'error',
+                                        'An error occured. Workout not saved.'
+                                    );
+                                    this.setStatus('error');
                                 },
                             }),
                             catchError(() => EMPTY)
@@ -176,12 +174,11 @@ export class WorkoutStore extends ComponentStore<WorkoutState> {
             },
             verticalPosition: 'bottom',
             panelClass: 'generic-snackbar-success',
-                // status === 'success'
-                //     ? 'generic-snackbar-success'
-                //     : 'generic-snackbar-error',
-            
+            // status === 'success'
+            //     ? 'generic-snackbar-success'
+            //     : 'generic-snackbar-error',
+
             duration: 2000,
-            
         });
     }
 }

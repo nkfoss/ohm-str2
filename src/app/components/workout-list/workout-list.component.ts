@@ -96,12 +96,15 @@ export class WorkoutListComponent implements OnInit {
         private route: ActivatedRoute,
         private router: Router,
         public dialog: MatDialog,
-        private workoutStore: WorkoutStore
+        private workoutStore: WorkoutStore,
     ) {}
 
     ngOnInit(): void {
         this.route.queryParams.subscribe((_) => {
-            this.workoutStore.fetchWorkouts();
+            const millis = this.$selectedMillis();
+            if (millis) {
+                this.workoutStore.fetchWorkouts(millis);
+            }
         });
     }
 
