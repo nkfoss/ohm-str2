@@ -2,44 +2,43 @@ import { Injectable } from '@angular/core';
 import { Tag } from '../models/workout.model';
 import { HttpClient } from '@angular/common/http';
 import { Observable, map, of } from 'rxjs';
-import { v4 as uuidv4 } from 'uuid';
 import { baseUrl } from '../constants/app.constants';
 
 interface TagsOnServer {
-    [key: string]: Omit<Tag, 'id'>
+    [key: string]: Omit<Tag, 'id'>;
+}
+interface TagsEntry {
+    [key: string]: string;
 }
 
 @Injectable({
     providedIn: 'root',
 })
 export class TagService {
-
-    readonly url  = baseUrl + 'tags.json';
+    readonly url = baseUrl + 'tags.json';
     constructor(private http: HttpClient) {}
 
-    fetchTags() {
-        return this.http.get<TagsOnServer>(this.url).pipe(
-            map(res => {
-                let tags: Tag[] = [];
-                for (const tagId in res) {
-                    tags.push({id: tagId, ...res[tagId]})
-                }
-                return tags;
-            })
-        )
+    fetchTags(): Observable<Tag[]> {
+        return this.http
+            .get<TagsEntry>(this.url)
+            .pipe(
+                map((res) =>
+                    Object.entries(res).map(([id, tagName]) => ({
+                        id: id,
+                        name: tagName,
+                    }))
+                )
+            );
     }
 
     saveAllTags(tags: Tag[]): Observable<Tag[]> {
-        const toServer: TagsOnServer = {};
-        tags.forEach(({id, ...rest}) => {
-            const tagId = id ?? uuidv4();
-            toServer[tagId] = rest
-        });
-        return this.http.patch<TagsOnServer>(this.url, toServer).pipe(
-            map(res => {
+        const tagsEntry: TagsEntry = {};
+        tags.forEach(tag => tagsEntry[tag.id] = tag.name)
+        return this.http.patch<TagsEntry>(this.url, tagsEntry).pipe(
+            map((res) => {
                 let tags: Tag[] = [];
                 for (const tagId in res) {
-                    tags.push({id: tagId, ...res[tagId]})
+                    tags.push({ id: tagId, name: res[tagId] });
                 }
                 return tags;
             })
@@ -58,5 +57,4 @@ export class TagService {
         //     return of(false);
         // }
     }
-
 }

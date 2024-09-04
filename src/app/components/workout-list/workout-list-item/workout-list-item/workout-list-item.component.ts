@@ -193,7 +193,7 @@ export class WorkoutListItemComponent implements OnChanges, OnDestroy {
                         this.workoutStore.saveWorkout(this.$workout());
                         this.tagStore.setUpdatedTags(undefined);
                     });
-                this.tagStore.addAllTags(newTags);
+                this.tagStore.saveAllTags(newTags);
             }
         });
     }

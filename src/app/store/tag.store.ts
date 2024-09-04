@@ -51,7 +51,7 @@ export class TagStore extends ComponentStore<TagState> {
         )
     })
 
-    readonly addAllTags = this.effect((tags$: Observable<Tag[] | undefined>) => {
+    readonly saveAllTags = this.effect((tags$: Observable<Tag[] | undefined>) => {
         return tags$.pipe(
             filterNullish(),
             exhaustMap((tags) => 
