@@ -34,6 +34,7 @@ import {
 } from '../../../dialogs/confirmation-dialog/confirmation-dialog.component';
 import { WorkoutStore } from '../../../../store/workout.store';
 import { MatMenuModule } from '@angular/material/menu';
+import { v4 as uuidv4 } from 'uuid';
 
 @Component({
     selector: 'app-workout-list-item',
@@ -193,6 +194,7 @@ export class WorkoutListItemComponent implements OnChanges, OnDestroy {
                         this.workoutStore.saveWorkout(this.$workout());
                         this.tagStore.setUpdatedTags(undefined);
                     });
+                newTags.forEach(tag => tag.id = uuidv4())
                 this.tagStore.saveAllTags(newTags);
             }
         });
