@@ -7,6 +7,7 @@ import {
     SimpleChanges,
 } from '@angular/core';
 import {
+    Exercise,
     ExerciseBlock,
     ExerciseSet,
 } from '../../../../../models/workout.model';
@@ -26,6 +27,7 @@ import {
 } from '../../../../dialogs/confirmation-dialog/confirmation-dialog.component';
 import { ExerciseStore } from '../../../../../store/exercise.store';
 import { MatMenuModule } from '@angular/material/menu';
+import { ExerciseHistoryComponent } from '../../../../exercise-history/exercise-history.component';
 
 export interface ExerciseBlockViewModel {
     exerciseName: string;
@@ -39,7 +41,7 @@ export interface ExerciseBlockViewModel {
         MatCheckboxModule,
         MatIconModule,
         MatMenuModule,
-        MatTableModule
+        MatTableModule,
     ],
     templateUrl: './exercise-block.component.html',
     styleUrl: './exercise-block.component.scss',
@@ -51,7 +53,7 @@ export class ExerciseBlockComponent implements OnChanges {
     ) {}
     @Input()
     exerciseBlock!: ExerciseBlock;
-    exerciseName = '';
+    exercise: Exercise | undefined;
 
     displayedColumns: string[] = ['weight', 'reps', 'actions'];
 
@@ -67,13 +69,21 @@ export class ExerciseBlockComponent implements OnChanges {
             this.exerciseStore.exercises$
                 .pipe(take(1))
                 .subscribe((exercises) => {
-                    const name = exercises.find(
+                    this.exercise = exercises.find(
                         (ex) => ex.id === this.exerciseBlock.exerciseId
-                    )?.name;
-                    this.exerciseName = name ?? 'unknown';
+                    );
                 });
             this.dataSource = this.exerciseBlock.sets ?? [];
         }
+    }
+
+    onOpenHistory() {
+        this.dialog.open<ExerciseHistoryComponent, Exercise, void>(
+            ExerciseHistoryComponent,
+            {
+                data: this.exercise,
+            }
+        );
     }
 
     onAddSet() {
@@ -102,7 +112,7 @@ export class ExerciseBlockComponent implements OnChanges {
     onCopySet(index: number) {
         const curr = this.exerciseBlock.sets.at(index);
         if (curr) {
-            this.exerciseBlock.sets.push({...curr});
+            this.exerciseBlock.sets.push({ ...curr });
             this.dataSource = [...this.exerciseBlock.sets];
         }
     }
@@ -116,7 +126,7 @@ export class ExerciseBlockComponent implements OnChanges {
         >(EditSetDialogComponent, {
             data: selected,
             position: {
-                top: `${window.innerHeight / 5}px`
+                top: `${window.innerHeight / 5}px`,
             },
         });
         dialogRef

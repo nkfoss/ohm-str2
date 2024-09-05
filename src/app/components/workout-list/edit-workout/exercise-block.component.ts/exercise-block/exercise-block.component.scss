@@ -1,6 +1,10 @@
 .main-container {
     margin-bottom: 10px;
 
+    .exercise-name:hover {
+        cursor: pointer;
+    }
+
     .no-sets-message {
         margin: 10px 0 0 10px;
         font-style: italic;

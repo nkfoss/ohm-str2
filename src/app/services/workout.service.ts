@@ -51,7 +51,7 @@ export class WorkoutService {
                 switchMap((workoutsResponse) => {
                     const requestsForBlocks = Object.keys(workoutsResponse).map(
                         (id) =>
-                            this.exerciseBlockService.fetchExerciseBlocks(id)
+                            this.exerciseBlockService.fetchExerciseBlocksForWorkout(id)
                     );
                     return forkJoin(requestsForBlocks).pipe(
                         map((exerciseBlockArrArr) => {

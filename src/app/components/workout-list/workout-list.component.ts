@@ -96,7 +96,7 @@ export class WorkoutListComponent implements OnInit {
         private route: ActivatedRoute,
         private router: Router,
         public dialog: MatDialog,
-        private workoutStore: WorkoutStore,
+        private workoutStore: WorkoutStore
     ) {}
 
     ngOnInit(): void {

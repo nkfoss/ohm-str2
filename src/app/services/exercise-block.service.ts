@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import {
     ExerciseBlock,
+    ExerciseSet,
     FirebaseFilter,
     Workout,
     _ExerciseBlock,
@@ -13,6 +14,10 @@ import { baseUrl } from '../constants/app.constants';
 export interface ExerciseBlocksEntry {
     [key: string]: _ExerciseBlock;
 }
+export interface ExerciseHistoryItem {
+    isoString: string;
+    exerciseBlockSummary: string;
+}
 
 @Injectable({
     providedIn: 'root',
@@ -24,10 +29,17 @@ export class ExerciseBlockService {
 
     constructor(private http: HttpClient) {}
 
-    fetchExerciseBlocks(workoutId: string): Observable<ExerciseBlock[]> {
+    fetchExerciseBlocksForWorkout(
+        workoutId: string
+    ): Observable<ExerciseBlock[]> {
         return this.http
             .get<ExerciseBlocksEntry>(this.url + this.SUFFIX, {
-                params: {...new FirebaseFilter<_ExerciseBlock, 'workoutId'>('workoutId', workoutId)},
+                params: {
+                    ...new FirebaseFilter<_ExerciseBlock, 'workoutId'>(
+                        'workoutId',
+                        workoutId
+                    ),
+                },
             })
             .pipe(
                 map((res) => {
@@ -39,6 +51,38 @@ export class ExerciseBlockService {
                         });
                     }
                     return blocks;
+                })
+            );
+    }
+
+    fetchExerciseHistory(
+        exerciseId: string
+    ): Observable<ExerciseHistoryItem[]> {
+        return this.http
+            .get<ExerciseBlocksEntry>(this.url + this.SUFFIX, {
+                params: {
+                    ...new FirebaseFilter<_ExerciseBlock, 'exerciseId'>(
+                        'exerciseId',
+                        exerciseId
+                    ),
+                },
+            })
+            .pipe(
+                map((res) => {
+                    let items: ExerciseHistoryItem[] = [];
+                    for (const id in res) {
+                        items.push({
+                            isoString: new Date(res[id].instantMillis)
+                                .toISOString()
+                                .substring(0, 10),
+                            exerciseBlockSummary: this.createBlockSummary(
+                                res[id].sets
+                            ),
+                        });
+                    }
+                    return items.sort(function (a, b) {
+                        return b.isoString.localeCompare(a.isoString);
+                    });
                 })
             );
     }
@@ -67,5 +111,25 @@ export class ExerciseBlockService {
                     return workout;
                 })
             );
+    }
+
+    createBlockSummary(sets: ExerciseSet[]): string {
+        if (!sets.length) {
+            return 'No sets';
+        } else {
+            let summary = '';
+            let lastWeight: number;
+            sets.forEach((set, i) => {
+                if (i === 0) {
+                    summary += set.weight + 'x' + set.reps;
+                } else if (lastWeight === set.weight) {
+                    summary += ',' + set.reps;
+                } else {
+                    summary += ' ' + set.weight + 'x' + set.reps;
+                }
+                lastWeight = set.weight!;
+            });
+            return summary;
+        }
     }
 }

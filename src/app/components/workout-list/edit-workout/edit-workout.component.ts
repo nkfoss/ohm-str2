@@ -195,7 +195,7 @@ export class EditWorkoutComponent implements OnInit, OnDestroy {
         });
     }
 
-    private addNewBlock(exerciseId?: string) {
+    private addNewBlock(exerciseId: string) {
         const newBlock: ExerciseBlock = {
             id: uuidv4(),
             exerciseId: exerciseId,
