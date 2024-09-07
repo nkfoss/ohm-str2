@@ -24,6 +24,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { DateNavComponent } from '../date-nav/date-nav.component';
 import { CopyWorkoutComponent } from '../dialogs/copy-workout/copy-workout.component';
 import { filterNullish } from '../../util/filterNullish';
+import { buildWorkout } from '../../util/workout.util';
 
 @Component({
     selector: 'app-workout-list',
@@ -45,6 +46,7 @@ import { filterNullish } from '../../util/filterNullish';
 })
 export class WorkoutListComponent implements OnInit {
     $params = toSignal(this.route.queryParams);
+    selectedMillis!: number;
     $selectedMillis = computed(() => {
         const params = this.$params();
         if (params && params['day'] && params['month'] && params['year']) {
@@ -103,7 +105,8 @@ export class WorkoutListComponent implements OnInit {
         this.route.queryParams.subscribe((_) => {
             const millis = this.$selectedMillis();
             if (millis) {
-                this.workoutStore.fetchWorkouts(millis);
+                this.selectedMillis = millis;
+                this.workoutStore.fetchWorkouts(this.selectedMillis);
             }
         });
     }
@@ -116,10 +119,7 @@ export class WorkoutListComponent implements OnInit {
     }
 
     onNewWorkout() {
-        this.workoutStore.saveWorkout({
-            name: 'new workout',
-            instantMillis: this.$selectedMillis(),
-        });
+        this.workoutStore.saveWorkout(buildWorkout(this.selectedMillis));
     }
 
     onCopyWorkout(workoutId: string) {
@@ -143,8 +143,8 @@ export class WorkoutListComponent implements OnInit {
                 .subscribe((datetime) => {
                     const { id, name, instantMillis, ...rest } = copied;
                     this.workoutStore.saveWorkout({
+                        ...buildWorkout(datetime.toMillis()),
                         name: `Copy of ${name ?? 'workout'}`,
-                        instantMillis: datetime?.toMillis(),
                         ...rest,
                     });
                 });

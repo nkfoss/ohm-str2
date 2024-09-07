@@ -74,9 +74,7 @@ export class WorkoutDataForm {
     styleUrl: './edit-workout.component.scss',
 })
 export class EditWorkoutComponent implements OnInit, OnDestroy {
-    workout: Partial<Workout> = {
-        exerciseBlocks: [],
-    };
+    workout!: Workout;
     onDestroy$: Subject<void> = new Subject();
     exerciseBlocks$ = new BehaviorSubject<ExerciseBlock[]>([]);
     workoutForm!: WorkoutForm;
@@ -122,7 +120,7 @@ export class EditWorkoutComponent implements OnInit, OnDestroy {
         const selectedWorkoutId =
             this.route.snapshot.queryParamMap.get('id') ?? undefined;
         this.workoutStore.selectWorkout(selectedWorkoutId);
-        this.tagStore.fetchTags();
+        this.tagStore.fetchTags(); // TODO: move to top of app
         const selectedWorkout = this.workoutStore.$selectedWorkout();
         if (selectedWorkout) {
             this.workout = selectedWorkout;
@@ -211,7 +209,6 @@ export class EditWorkoutComponent implements OnInit, OnDestroy {
         this.workout = {
             ...this.workout,
             ...this.workoutDataForm.getRawValue(),
-            instantMillis: this.$selectedMillis(),
         };
         if (!this.workout.id) {
             this.workoutStore.selectedWorkoutId$

@@ -6,7 +6,7 @@ export interface UserInteractable {
 export interface Workout extends UserInteractable{
     id: string;
     name: string;
-    description: string;
+    description?: string;
     instantMillis: number;
     exerciseBlocks: ExerciseBlock[];
 }

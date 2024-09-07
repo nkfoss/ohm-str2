@@ -108,13 +108,13 @@ export class WorkoutStore extends ComponentStore<WorkoutState> {
     });
 
     readonly saveWorkout = this.effect(
-        (workout$: Observable<Partial<Workout> | undefined>) => {
+        (workout$: Observable<Workout | undefined>) => {
             return workout$.pipe(
                 filterNullish(),
                 switchMap((workout) => {
                     this.setStatus('processing');
                     return this.workoutService
-                        .saveWorkout(workout as Workout)
+                        .saveWorkout(workout)
                         .pipe(
                             tap({
                                 next: (saved) => {
