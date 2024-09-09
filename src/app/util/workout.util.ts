@@ -10,3 +10,13 @@ export function buildWorkout(instantMillis: number): Workout {
         instantMillis: instantMillis
     }
 }
+
+export function copyWorkout(instantMillis: number, workout: Workout): Workout {
+    return {
+        ...workout,
+        id: uuidv4(),
+        instantMillis: instantMillis,
+        name: `Copy of ${workout.name}`,
+        exerciseBlocks: workout.exerciseBlocks.map(block => ({...block, id: uuidv4()}))
+    }
+}

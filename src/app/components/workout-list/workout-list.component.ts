@@ -24,7 +24,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { DateNavComponent } from '../date-nav/date-nav.component';
 import { CopyWorkoutComponent } from '../dialogs/copy-workout/copy-workout.component';
 import { filterNullish } from '../../util/filterNullish';
-import { buildWorkout } from '../../util/workout.util';
+import { buildWorkout, copyWorkout } from '../../util/workout.util';
 
 @Component({
     selector: 'app-workout-list',
@@ -141,12 +141,9 @@ export class WorkoutListComponent implements OnInit {
                 .afterClosed()
                 .pipe(filterNullish())
                 .subscribe((datetime) => {
-                    const { id, name, instantMillis, ...rest } = copied;
-                    this.workoutStore.saveWorkout({
-                        ...buildWorkout(datetime.toMillis()),
-                        name: `Copy of ${name ?? 'workout'}`,
-                        ...rest,
-                    });
+                    this.workoutStore.saveWorkout(
+                        copyWorkout(datetime.toMillis(), copied)
+                    );
                 });
         }
     }
