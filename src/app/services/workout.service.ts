@@ -31,10 +31,13 @@ export class WorkoutService {
         private exerciseBlockService: ExerciseBlockService
     ) {}
 
-    deleteWorkout(workoutId: string) {
-        return this.http.delete<WorkoutsEntry>(
-            this.url + `/${workoutId}` + this.SUFFIX
-        );
+    deleteWorkout(workout: Workout): Observable<null> {
+        const deleteReqs: Observable<null>[] = [];
+        deleteReqs.push(
+            ...workout.exerciseBlocks.map(block => this.exerciseBlockService.delete(block.id)),
+            this.http.delete<null>(this.url + `/${workout.id}` + this.SUFFIX)
+        )
+        return forkJoin(deleteReqs).pipe(map(() => null))
     }
 
     fetchWorkouts(instantMillis: number): Observable<Workout[]> {
@@ -51,7 +54,9 @@ export class WorkoutService {
                 switchMap((workoutsResponse) => {
                     const requestsForBlocks = Object.keys(workoutsResponse).map(
                         (id) =>
-                            this.exerciseBlockService.fetchExerciseBlocksForWorkout(id)
+                            this.exerciseBlockService.fetchExerciseBlocksForWorkout(
+                                id
+                            )
                     );
                     return forkJoin(requestsForBlocks).pipe(
                         map((exerciseBlockArrArr) => {
@@ -93,14 +98,25 @@ export class WorkoutService {
 
     private mapBlocksToWorkouts(
         blocks: ExerciseBlock[][],
-        res: WorkoutsEntry
+        workoutsEntry: WorkoutsEntry
     ): Workout[] {
         const workouts: Workout[] = [];
-        Object.keys(res).forEach((id, index) => {
-            const { exerciseBlockIds, ...rest } = res[id];
+        Object.keys(workoutsEntry).forEach((workoutId, index) => {
+            const { exerciseBlockIds, ...rest } = workoutsEntry[workoutId];
+            const blocksFromDb = blocks[index] ?? [];
+            const blocksForWorkout: ExerciseBlock[] = [];
+            exerciseBlockIds?.forEach((exerciseBlockId) => {
+                const matchFromDb = blocksFromDb.find(
+                    (block) => block.id === exerciseBlockId
+                );
+                if (matchFromDb) {
+                    matchFromDb.sets = matchFromDb.sets ?? [];
+                    blocksForWorkout.push(matchFromDb);
+                }
+            });
             workouts.push({
-                id: id,
-                exerciseBlocks: blocks[index],
+                id: workoutId,
+                exerciseBlocks: blocksForWorkout,
                 ...rest,
             });
         });
@@ -111,6 +127,7 @@ export class WorkoutService {
         workoutsEntry: WorkoutsEntry,
         blocksEntry: ExerciseBlocksEntry
     ): Workout {
+        console.log('converting entries to wo');
         const workoutId = Object.keys(workoutsEntry)[0];
         const { exerciseBlockIds, ...rest } = Object.values(workoutsEntry)[0];
         const workout: Workout = {
@@ -118,9 +135,10 @@ export class WorkoutService {
             exerciseBlocks: Object.entries(blocksEntry)
                 .filter(([id, block]) => block.workoutId === workoutId)
                 .map(([id, block]) => {
-                    const { workoutId, instantMillis, ...rest } = block;
+                    const { workoutId, instantMillis, sets, ...rest } = block;
                     return {
                         id: id,
+                        sets: sets ?? [],
                         ...rest,
                     };
                 }),

@@ -113,26 +113,24 @@ export class WorkoutStore extends ComponentStore<WorkoutState> {
                 filterNullish(),
                 switchMap((workout) => {
                     this.setStatus('processing');
-                    return this.workoutService
-                        .saveWorkout(workout)
-                        .pipe(
-                            tap({
-                                next: (saved) => {
-                                    this.showSnackbar('success');
-                                    this.setStatus('complete');
-                                    this.updateWorkout(saved);
-                                    this.setStatus('normal');
-                                },
-                                error: (err) => {
-                                    this.showSnackbar(
-                                        'error',
-                                        'An error occured. Workout not saved.'
-                                    );
-                                    this.setStatus('error');
-                                },
-                            }),
-                            catchError(() => EMPTY)
-                        );
+                    return this.workoutService.saveWorkout(workout).pipe(
+                        tap({
+                            next: (saved) => {
+                                this.showSnackbar('success');
+                                this.setStatus('complete');
+                                this.updateWorkout(saved);
+                                this.setStatus('normal');
+                            },
+                            error: (err) => {
+                                this.showSnackbar(
+                                    'error',
+                                    'An error occured. Workout not saved.'
+                                );
+                                this.setStatus('error');
+                            },
+                        }),
+                        catchError(() => EMPTY)
+                    );
                 })
             );
         }
@@ -142,8 +140,11 @@ export class WorkoutStore extends ComponentStore<WorkoutState> {
         (id$: Observable<string | undefined>) => {
             return id$.pipe(
                 filterNullish(),
-                exhaustMap((id) =>
-                    this.workoutService.deleteWorkout(id).pipe(
+                exhaustMap((id) => {
+                    const workout = this.$workouts().find(
+                        (workout) => workout.id === id
+                    );
+                    return this.workoutService.deleteWorkout(workout!).pipe(
                         tapResponse(
                             () => {
                                 this.setState((state) => {
@@ -157,8 +158,8 @@ export class WorkoutStore extends ComponentStore<WorkoutState> {
                             },
                             (err: Error) => console.error(err)
                         )
-                    )
-                )
+                    );
+                })
             );
         }
     );

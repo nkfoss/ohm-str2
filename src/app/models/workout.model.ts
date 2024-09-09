@@ -11,7 +11,7 @@ export interface Workout extends UserInteractable{
     exerciseBlocks: ExerciseBlock[];
 }
 export interface _Workout extends Omit<Workout, 'exerciseBlocks' | 'id'> {
-    exerciseBlockIds: string[];
+    exerciseBlockIds?: string[];
 }
 export interface ExerciseBlock extends UserInteractable {
     id: string;
