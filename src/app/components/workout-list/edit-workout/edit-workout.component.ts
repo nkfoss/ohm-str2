@@ -123,7 +123,7 @@ export class EditWorkoutComponent implements OnInit, OnDestroy {
         this.tagStore.fetchTags(); // TODO: move to top of app
         const selectedWorkout = this.workoutStore.$selectedWorkout();
         if (selectedWorkout) {
-            this.workout = selectedWorkout;
+            this.workout = {...selectedWorkout};
             this.workoutDataForm = new FormGroup(
                 new WorkoutDataForm(this.workout)
             );
@@ -214,8 +214,7 @@ export class EditWorkoutComponent implements OnInit, OnDestroy {
             this.workoutStore.selectedWorkoutId$
                 .pipe(filterNullish(), take(1))
                 .subscribe((id) => {
-                    this.workout =
-                        this.workoutStore.$selectedWorkout() ?? this.workout;
+                    this.workout = this.workoutStore.$selectedWorkout()!;
                     this.router.navigate([], {
                         relativeTo: this.route,
                         queryParams: { id: id, ...this.$params() },
