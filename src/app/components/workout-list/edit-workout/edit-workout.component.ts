@@ -22,6 +22,7 @@ import {
     FormGroup,
     FormsModule,
     ReactiveFormsModule,
+    Validators,
 } from '@angular/forms';
 import {
     ConfirmationDialogComponent,
@@ -123,7 +124,7 @@ export class EditWorkoutComponent implements OnInit, OnDestroy {
         this.tagStore.fetchTags(); // TODO: move to top of app
         const selectedWorkout = this.workoutStore.$selectedWorkout();
         if (selectedWorkout) {
-            this.workout = {...selectedWorkout};
+            this.workout = { ...selectedWorkout };
             this.workoutDataForm = new FormGroup(
                 new WorkoutDataForm(this.workout)
             );
@@ -203,24 +204,21 @@ export class EditWorkoutComponent implements OnInit, OnDestroy {
             ...(this.workout.exerciseBlocks ?? []),
             newBlock,
         ];
+        console.log("qwe")
+        this.onSave();
     }
 
     onSave() {
+        if (!this.workoutDataForm.valid || this.$processing()) {
+            return;
+        }
         this.workout = {
             ...this.workout,
             ...this.workoutDataForm.getRawValue(),
         };
-        if (!this.workout.id) {
-            this.workoutStore.selectedWorkoutId$
-                .pipe(filterNullish(), take(1))
-                .subscribe((id) => {
-                    this.workout = this.workoutStore.$selectedWorkout()!;
-                    this.router.navigate([], {
-                        relativeTo: this.route,
-                        queryParams: { id: id, ...this.$params() },
-                    });
-                });
-        }
+        this.workoutStore.status$
+            .pipe(filter(status => status === 'normal'), skip(1))
+            .subscribe();
         this.workoutStore.saveWorkout(this.workout);
     }
 
@@ -234,6 +232,7 @@ export class EditWorkoutComponent implements OnInit, OnDestroy {
             copy?.splice(index, 1);
             this.workout.exerciseBlocks = copy;
         }
+        this.onSave();
     }
 
     onNavigateBack() {

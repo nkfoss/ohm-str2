@@ -53,6 +53,7 @@
         <app-exercise-block
             [exerciseBlock]="exerciseBlock"
             (deleteBlock)="onDeleteBlock($event)"
+            (blockChanged)="onSave()"
         ></app-exercise-block>
         } @empty {
         <p>Add an exercise for this workout!</p>

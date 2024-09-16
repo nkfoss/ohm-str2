@@ -6,7 +6,7 @@ import {
     Workout,
     _ExerciseBlock,
 } from '../models/workout.model';
-import { Observable, forkJoin, map } from 'rxjs';
+import { Observable, map } from 'rxjs';
 import { v4 as uuidv4 } from 'uuid';
 import { HttpClient } from '@angular/common/http';
 import { baseUrl } from '../constants/app.constants';

@@ -70,11 +70,11 @@ export class WorkoutService {
             );
     }
 
-    saveWorkout(workout: Workout): Observable<Workout> {
+    saveWorkout(workout: Workout, blockIdsToDelete?: string[]): Observable<Workout> {
         const workoutsEntry: WorkoutsEntry =
             this.convertToWorkoutsEntry(workout);
         const blocksEntry: ExerciseBlocksEntry =
-            this.convertToExerciseBlocksEntry(workout);
+            this.convertToExerciseBlocksEntry(workout, blockIdsToDelete);
 
         let workoutsEntryRes: WorkoutsEntry;
         return this.http
@@ -133,7 +133,9 @@ export class WorkoutService {
         const workout: Workout = {
             id: workoutId,
             exerciseBlocks: Object.entries(blocksEntry)
-                .filter(([id, block]) => block.workoutId === workoutId)
+                .filter(([id, block]) => {
+                    return block?.workoutId === workoutId // block is optional for case where block was deleted
+                })
                 .map(([id, block]) => {
                     const { workoutId, instantMillis, sets, ...rest } = block;
                     return {
@@ -158,7 +160,7 @@ export class WorkoutService {
     }
 
     private convertToExerciseBlocksEntry(
-        workout: Workout
+        workout: Workout, blockIdsToDelete?: string[]
     ): ExerciseBlocksEntry {
         const blocksEntry: ExerciseBlocksEntry = {};
         workout.exerciseBlocks.forEach((block) => {
@@ -169,6 +171,7 @@ export class WorkoutService {
                 ...rest,
             };
         });
+        blockIdsToDelete?.forEach(id => blocksEntry[id] = null as unknown as _ExerciseBlock) // TODO: Figure out a better way
         return blocksEntry;
     }
 }

@@ -55,6 +55,9 @@ export class ExerciseBlockComponent implements OnChanges {
     exerciseBlock!: ExerciseBlock;
     exercise: Exercise | undefined;
 
+    @Output()
+    blockChanged: EventEmitter<void> = new EventEmitter();
+
     displayedColumns: string[] = ['weight', 'reps', 'actions'];
 
     dataSource: ExerciseSet[] = [];
@@ -106,6 +109,7 @@ export class ExerciseBlockComponent implements OnChanges {
                 }
                 this.exerciseBlock.sets.push(set);
                 this.dataSource = [...this.exerciseBlock.sets];
+                this.blockChanged.emit();
             });
     }
 
@@ -114,6 +118,7 @@ export class ExerciseBlockComponent implements OnChanges {
         if (curr) {
             this.exerciseBlock.sets.push({ ...curr });
             this.dataSource = [...this.exerciseBlock.sets];
+            this.blockChanged.emit();
         }
     }
 
@@ -135,12 +140,14 @@ export class ExerciseBlockComponent implements OnChanges {
             .subscribe((set: ExerciseSet) => {
                 this.exerciseBlock.sets[index] = set;
                 this.dataSource = [...this.exerciseBlock.sets];
+                this.blockChanged.emit();
             });
     }
 
     onDeleteSet(index: number) {
         this.exerciseBlock.sets.splice(index, 1);
         this.dataSource = [...this.exerciseBlock.sets];
+        this.blockChanged.emit();
     }
 
     onDeleteBlock() {

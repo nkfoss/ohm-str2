@@ -17,6 +17,7 @@ import {
     GenericSnackBarData,
     GenericSnackbarComponent,
 } from '../components/snackbars/generic-snackbar/generic-snackbar.component';
+import { toObservable } from '@angular/core/rxjs-interop';
 
 export interface WorkoutState extends GeneralState {
     workouts: Workout[];
@@ -49,10 +50,12 @@ export class WorkoutStore extends ComponentStore<WorkoutState> {
         (state) => state.selectedWorkoutId
     );
     readonly $selectedWorkout = computed(() => {
-        return this.$workouts().find(
+        const selected = this.$workouts().find(
             (workout) => workout.id === this.$selectedWorkoutId()
         );
+        return selected!;
     });
+    readonly selectedWorkout$ = toObservable(this.$selectedWorkout)
 
     readonly setStatus = this.updater(
         (state: WorkoutState, status: StateStatus) => ({
@@ -113,7 +116,10 @@ export class WorkoutStore extends ComponentStore<WorkoutState> {
                 filterNullish(),
                 switchMap((workout) => {
                     this.setStatus('processing');
-                    return this.workoutService.saveWorkout(workout).pipe(
+                    const currentBlockIds = this.$selectedWorkout()?.exerciseBlocks.map(block => block.id);
+                    const savedBlockIds = workout.exerciseBlocks.map(block => block.id);
+                    const toDelete = currentBlockIds?.filter(currentBlockId => savedBlockIds.indexOf(currentBlockId) < 0);
+                    return this.workoutService.saveWorkout(workout, toDelete).pipe(
                         tap({
                             next: (saved) => {
                                 this.showSnackbar('success');
