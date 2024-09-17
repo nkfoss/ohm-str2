@@ -122,7 +122,6 @@ export class WorkoutStore extends ComponentStore<WorkoutState> {
                     return this.workoutService.saveWorkout(workout, toDelete).pipe(
                         tap({
                             next: (saved) => {
-                                this.showSnackbar('success');
                                 this.setStatus('complete');
                                 this.updateWorkout(saved);
                                 this.setStatus('normal');

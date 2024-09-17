@@ -9,7 +9,7 @@
                 mat-fab
                 extended
                 color="primary"
-                (click)="onSave()"
+                (click)="onSave(true)"
                 [disabled]="!workoutDataForm.valid || $processing()"
             >
                 Save

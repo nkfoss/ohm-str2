@@ -36,6 +36,8 @@ import { TagStore } from '../../../store/tag.store';
 import { noEmptyStringValidator } from '../../validators/empty-string.validator';
 import { DateTime } from 'luxon';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { GenericSnackBarData, GenericSnackbarComponent } from '../../snackbars/generic-snackbar/generic-snackbar.component';
 
 export class WorkoutDataForm {
     name = new FormControl<string>('', {
@@ -106,6 +108,7 @@ export class EditWorkoutComponent implements OnInit, OnDestroy {
     constructor(
         private workoutStore: WorkoutStore,
         private exerciseStore: ExerciseStore,
+        private snackBar: MatSnackBar,
         private tagStore: TagStore,
         private route: ActivatedRoute,
         private dialog: MatDialog,
@@ -208,7 +211,7 @@ export class EditWorkoutComponent implements OnInit, OnDestroy {
         this.onSave();
     }
 
-    onSave() {
+    onSave(showSnackbar?: boolean) {
         if (!this.workoutDataForm.valid || this.$processing()) {
             return;
         }
@@ -216,9 +219,13 @@ export class EditWorkoutComponent implements OnInit, OnDestroy {
             ...this.workout,
             ...this.workoutDataForm.getRawValue(),
         };
-        this.workoutStore.status$
+        if (showSnackbar) {
+            this.workoutStore.status$
             .pipe(filter(status => status === 'normal'), skip(1))
-            .subscribe();
+            .subscribe(status => {
+                this.showSnackbar('success')
+            });
+        }
         this.workoutStore.saveWorkout(this.workout);
     }
 
@@ -239,6 +246,25 @@ export class EditWorkoutComponent implements OnInit, OnDestroy {
         const { id, ...params } = this.$params() as any;
         this.router.navigate(['workouts'], {
             queryParams: params,
+        });
+    }
+
+    private showSnackbar(status: 'success' | 'error', message?: string) {
+        this.snackBar.openFromComponent<
+            GenericSnackbarComponent,
+            GenericSnackBarData
+        >(GenericSnackbarComponent, {
+            data: {
+                status: status,
+                message: message,
+            },
+            verticalPosition: 'bottom',
+            panelClass: 'generic-snackbar-success',
+            // status === 'success'
+            //     ? 'generic-snackbar-success'
+            //     : 'generic-snackbar-error',
+
+            duration: 2000,
         });
     }
 }
