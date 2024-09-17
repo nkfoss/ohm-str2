@@ -25,6 +25,7 @@ import { DateNavComponent } from '../date-nav/date-nav.component';
 import { CopyWorkoutComponent } from '../dialogs/copy-workout/copy-workout.component';
 import { filterNullish } from '../../util/filterNullish';
 import { buildWorkout, copyWorkout } from '../../util/workout.util';
+import { WorkoutService } from '../../services/workout.service';
 
 @Component({
     selector: 'app-workout-list',
@@ -98,8 +99,13 @@ export class WorkoutListComponent implements OnInit {
         private route: ActivatedRoute,
         private router: Router,
         public dialog: MatDialog,
-        private workoutStore: WorkoutStore
+        private workoutStore: WorkoutStore,
+        private svc: WorkoutService
     ) {}
+
+    qwe() {
+        this.svc.qwe()
+    }
 
     ngOnInit(): void {
         this.route.queryParams.subscribe((_) => {

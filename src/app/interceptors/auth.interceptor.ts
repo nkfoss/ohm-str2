@@ -24,8 +24,10 @@ export class AuthInterceptor implements HttpInterceptor {
                     return next.handle(req)
                 }
                 const newReq = req.clone({
-                    setParams: {auth: user.token}
+                    setParams: {auth: user.token},
+                    setHeaders: {"Authorization": "Bearer " + user.token}
                 });
+                console.log("new Req", newReq)
                 return next.handle(newReq);
             })
         );

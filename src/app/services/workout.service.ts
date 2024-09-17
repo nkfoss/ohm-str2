@@ -31,6 +31,10 @@ export class WorkoutService {
         private exerciseBlockService: ExerciseBlockService
     ) {}
 
+    qwe() {
+        this.http.get<string>('http://localhost:8080/hello-world').subscribe(res => console.log(res));
+    }
+
     deleteWorkout(workout: Workout): Observable<null> {
         const deleteReqs: Observable<null>[] = [];
         deleteReqs.push(
