@@ -221,7 +221,7 @@ export class EditWorkoutComponent implements OnInit, OnDestroy {
         };
         if (showSnackbar) {
             this.workoutStore.status$
-            .pipe(filter(status => status === 'normal'), skip(1))
+            .pipe(filter(status => status === 'normal'), skip(1), take(1))
             .subscribe(status => {
                 this.showSnackbar('success')
             });
