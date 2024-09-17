@@ -264,7 +264,7 @@ export class EditWorkoutComponent implements OnInit, OnDestroy {
             //     ? 'generic-snackbar-success'
             //     : 'generic-snackbar-error',
 
-            duration: 2000,
+            duration: 1000,
         });
     }
 }
