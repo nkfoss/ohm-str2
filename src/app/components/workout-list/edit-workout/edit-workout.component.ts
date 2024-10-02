@@ -36,6 +36,8 @@ import { TagStore } from '../../../store/tag.store';
 import { noEmptyStringValidator } from '../../validators/empty-string.validator';
 import { DateTime } from 'luxon';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { GenericSnackBarData, GenericSnackbarComponent } from '../../snackbars/generic-snackbar/generic-snackbar.component';
 
 export class WorkoutDataForm {
     name = new FormControl<string>('', {
@@ -91,10 +93,11 @@ export class EditWorkoutComponent implements OnInit, OnDestroy {
     $selectedMillis = computed(() => {
         const params = this.$params();
         if (params && params['day'] && params['month'] && params['year']) {
-            return DateTime.fromFormat(
-                params['day'] + params['month'] + params['year'],
-                'dMyyyy'
-            ).toMillis();
+            return DateTime.fromObject({
+                day: params['day'],
+                month: params['month'],
+                year: params['year']
+            }).toMillis();
         } else {
             return undefined;
         }
@@ -106,6 +109,7 @@ export class EditWorkoutComponent implements OnInit, OnDestroy {
     constructor(
         private workoutStore: WorkoutStore,
         private exerciseStore: ExerciseStore,
+        private snackBar: MatSnackBar,
         private tagStore: TagStore,
         private route: ActivatedRoute,
         private dialog: MatDialog,
@@ -208,7 +212,7 @@ export class EditWorkoutComponent implements OnInit, OnDestroy {
         this.onSave();
     }
 
-    onSave() {
+    onSave(showSnackbar?: boolean) {
         if (!this.workoutDataForm.valid || this.$processing()) {
             return;
         }
@@ -216,9 +220,13 @@ export class EditWorkoutComponent implements OnInit, OnDestroy {
             ...this.workout,
             ...this.workoutDataForm.getRawValue(),
         };
-        this.workoutStore.status$
-            .pipe(filter(status => status === 'normal'), skip(1))
-            .subscribe();
+        if (showSnackbar) {
+            this.workoutStore.status$
+            .pipe(filter(status => status === 'normal'), skip(1), take(1))
+            .subscribe(status => {
+                this.showSnackbar('success')
+            });
+        }
         this.workoutStore.saveWorkout(this.workout);
     }
 
@@ -239,6 +247,25 @@ export class EditWorkoutComponent implements OnInit, OnDestroy {
         const { id, ...params } = this.$params() as any;
         this.router.navigate(['workouts'], {
             queryParams: params,
+        });
+    }
+
+    private showSnackbar(status: 'success' | 'error', message?: string) {
+        this.snackBar.openFromComponent<
+            GenericSnackbarComponent,
+            GenericSnackBarData
+        >(GenericSnackbarComponent, {
+            data: {
+                status: status,
+                message: message,
+            },
+            verticalPosition: 'bottom',
+            panelClass: 'generic-snackbar-success',
+            // status === 'success'
+            //     ? 'generic-snackbar-success'
+            //     : 'generic-snackbar-error',
+
+            duration: 1000,
         });
     }
 }
