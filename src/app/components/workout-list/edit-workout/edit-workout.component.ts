@@ -93,10 +93,11 @@ export class EditWorkoutComponent implements OnInit, OnDestroy {
     $selectedMillis = computed(() => {
         const params = this.$params();
         if (params && params['day'] && params['month'] && params['year']) {
-            return DateTime.fromFormat(
-                params['day'] + params['month'] + params['year'],
-                'dMyyyy'
-            ).toMillis();
+            return DateTime.fromObject({
+                day: params['day'],
+                month: params['month'],
+                year: params['year']
+            }).toMillis();
         } else {
             return undefined;
         }
