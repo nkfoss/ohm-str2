@@ -50,10 +50,11 @@ export class WorkoutListComponent implements OnInit {
     $selectedMillis = computed(() => {
         const params = this.$params();
         if (params && params['day'] && params['month'] && params['year']) {
-            return DateTime.fromFormat(
-                params['day'] + params['month'] + params['year'],
-                'dMyyyy'
-            ).toMillis();
+            return DateTime.fromObject({
+                day: params['day'],
+                month: params['month'],
+                year: params['year']
+            }).toMillis();
         } else {
             return undefined;
         }
@@ -168,10 +169,11 @@ export class WorkoutListComponent implements OnInit {
     changeDate(delta: number) {
         const params = this.$params();
         if (params) {
-            let dt = DateTime.fromFormat(
-                params['day'] + params['month'] + params['year'],
-                'dMyyyy'
-            );
+            let dt = DateTime.fromObject({
+                day: params['day'],
+                month: params['month'],
+                year: params['year']
+            });
             dt = dt.plus({ days: delta });
             this.router.navigate(this.route.snapshot.url, {
                 queryParams: { day: dt.day, month: dt.month, year: dt.year },
